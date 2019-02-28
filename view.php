@@ -33,8 +33,18 @@ if($sentimentanalysis->is_cancelled())
 {
     // Submission is validated and ad hoc task is called.
     $courseurl = new moodle_url('/course/view.php', array('id' => $courseid));
+    // Read all online text submissions for selecte assignment into a temporary directory.
+    // TODO: move this code to another file? seems messy here.
     print_object($fromform);
-//    redirect($courseurl);
+    $assignment = $fromform->assignment;
+    $text_submissions = $DB->get_records_sql("SELECT *
+                                        FROM mdl_assignsubmission_onlinetext t
+                                        WHERE t.assignment = '$assignment'");
+//    print_object($text_submissions);
+    $context = context_module::instance($courseid);
+    print_object($context);
+
+//    create_directory($context, 'block_sentimentanalysis', $filearea, $itemid, $filepath);
 } else
 {
     echo $OUTPUT->header();
