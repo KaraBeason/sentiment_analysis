@@ -2,6 +2,8 @@
 
 require_once('../../config.php');
 require_once('sentimentanalysis_form.php');
+include(dirname(__FILE__) . '/classes/task/block_sentimentanlysis_background_task.php');
+
 
 global $DB, $OUTPUT, $PAGE;
 
@@ -45,10 +47,22 @@ if($sentimentanalysis->is_cancelled())
     $dir = make_temp_directory('sentiment_analysis');
     foreach ($text_submissions as $sub)
     {
+        // TODO: need unique way to identify whose assignment it is.
         $myfile = fopen($dir . "/submission_" . $sub->id . ".txt", "w");
         fwrite($myfile, strip_tags($sub->onlinetext));
         fclose($myfile);
     }
+    // create the ad hoc task.
+    $sentiment_analyzer = new block_sentimentanalysis_background_task();
+    // set blocking if required (it probably isn't)
+//    $sentiment_analyzer->set_blocking(true);
+    // add custom data
+    $sentiment_analyzer->set_custom_data(array(
+        'directory_name' => $dir,
+    ));
+
+    // queue it
+    \core\task\manager::queue_adhoc_task($sentiment_analyzer);
 } else
 {
     echo $OUTPUT->header();
