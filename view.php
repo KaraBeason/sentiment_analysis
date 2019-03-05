@@ -35,19 +35,39 @@ if($sentimentanalysis->is_cancelled())
     $courseurl = new moodle_url('/course/view.php', array('id' => $courseid));
     // Read all online text submissions for selecte assignment into a temporary directory.
     // TODO: move this code to another file? seems messy here.
-    print_object($fromform);
+//    print_object($fromform);
     $assignment = $fromform->assignment;
     $text_submissions = $DB->get_records_sql("SELECT *
                                         FROM mdl_assignsubmission_onlinetext t
                                         WHERE t.assignment = '$assignment'");
-//    print_object($text_submissions);
     $context = context_module::instance($courseid);
-    print_object($context);
 
-//    create_directory($context, 'block_sentimentanalysis', $filearea, $itemid, $filepath);
+    $dir = make_temp_directory('sentiment_analysis');
+    foreach ($text_submissions as $sub)
+    {
+        $myfile = fopen($dir . "/submission_" . $sub->id . ".txt", "w");
+        fwrite($myfile, strip_tags($sub->onlinetext));
+        fclose($myfile);
+    }
 } else
 {
     echo $OUTPUT->header();
     $sentimentanalysis->display();
     echo $OUTPUT->footer();
 }
+
+// TODO: this should be used when creating the report file FROM the results of the python script.
+// File creation as seen in moodle File API.
+//    $fs = get_file_storage();
+//        print_object($sub);
+//    // Prepare file record object
+//        $fileinfo = array(
+//            'contextid' => $context->id, // ID of context
+//            'component' => 'block_sentimentanalysis',     // usually = table name
+//            'filearea' => 'temp',     // usually = table name
+//            'itemid' => 0,               // usually = ID of row in table
+//            'filepath' => '/'. $dir . '/',           // any path beginning and ending in /
+//            'filename' => 'submission_' . $sub->id . '.txt'); // any filename
+//
+//    // Create file containing text 'hello world'
+//        $fs->create_file_from_string($fileinfo, "hi there");
