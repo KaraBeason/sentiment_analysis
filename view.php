@@ -2,8 +2,8 @@
 
 require_once('../../config.php');
 require_once('sentimentanalysis_form.php');
-include(__DIR__ . '/classes/block_sentimentanlysis_task.php');
-
+include(__DIR__ . '/classes/task/block_sentimentanlysis_task.php');
+use block_sentimentanalysis\task\block_sentimentanalysis_task;
 
 global $DB, $OUTPUT, $PAGE;
 
@@ -55,16 +55,14 @@ if($sentimentanalysis->is_cancelled())
     // create the ad hoc task.
     $sentiment_analyzer = new block_sentimentanalysis_task();
     // set blocking if required (it probably isn't)
-//    $sentiment_analyzer->set_blocking(true);
+    //     $sentiment_analyzer->set_blocking(true);
     // add custom data
 
-    if (class_exists(block_sentimentanalysis_task::class)) {
-        $sentiment_analyzer->set_custom_data(array(
-            'directory_name' => $dir,
-        ));
+    $sentiment_analyzer->set_custom_data(array(
+        'directory_name' => $dir,
+    ));
         \core\task\manager::queue_adhoc_task($sentiment_analyzer);
         print_object($sentiment_analyzer);
-    }
     // queue it
 } else
 {
