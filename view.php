@@ -2,7 +2,7 @@
 
 require_once('../../config.php');
 require_once('sentimentanalysis_form.php');
-include(__DIR__ . '/classes/task/block_sentimentanlysis_task.php');
+include(__DIR__ . '/classes/block_sentimentanlysis_task.php');
 
 
 global $DB, $OUTPUT, $PAGE;
