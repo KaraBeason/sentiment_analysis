@@ -17,7 +17,8 @@ if (not os.path.isdir(directory)) or (not os.path.exists(directory)):
 
 
 def print_report(report_name, sentiments_list):
-    rep = canvas.Canvas(report_name + ".pdf", pagesize=letter)
+    save_name = os.path.join(directory, report_name + ".pdf")
+    rep = canvas.Canvas(save_name, pagesize=letter)
     width, height = letter  # keep for later
     y = height - 100
     for sentiment in sentiments_list:
@@ -50,5 +51,5 @@ for filename in os.listdir(directory):
 
 print_report("test", sentiments)
 
-
+print "hello from python script!"
 

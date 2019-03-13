@@ -9,7 +9,6 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $text_submissions = $this->get_custom_data();
         $text_submissions = $text_submissions->submissions;
-        var_dump($text_submissions);
         // Make temp directory and write all assignment submissions to it.
         $dir = make_temp_directory('sentiment_analysis');
         foreach ($text_submissions as $sub)
@@ -23,6 +22,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         exec('C:\Python27\python '. __DIR__ . '\\sentiments_analysis.py C:\\xampp\\moodledata\/temp\/sentiment_analysis', $output, $return);
         // Return will return non-zero upon an error
         if (!$return) {
+            var_dump($output);
             echo "PDF Created Successfully";
         } else {
             echo "PDF not created";
