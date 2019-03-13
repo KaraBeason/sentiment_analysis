@@ -34,24 +34,13 @@ if($sentimentanalysis->is_cancelled())
 } else if ($fromform = $sentimentanalysis->get_data())
 {
     // Submission is validated and ad hoc task is called.
-    $courseurl = new moodle_url('/course/view.php', array('id' => $courseid));
-    // Read all online text submissions for selecte assignment into a temporary directory.
+    // Read all online text submissions for selected assignment into a temporary directory.
     // TODO: move this code to another file? seems messy here.
-//    print_object($fromform);
     $assignment = $fromform->assignment;
     $text_submissions = $DB->get_records_sql("SELECT *
                                         FROM mdl_assignsubmission_onlinetext t
                                         WHERE t.assignment = '$assignment'");
-    $context = context_module::instance($courseid);
 
-    $dir = make_temp_directory('sentiment_analysis');
-    foreach ($text_submissions as $sub)
-    {
-        // TODO: need unique way to identify whose assignment it is.
-        $myfile = fopen($dir . "\submission_" . $sub->id . ".txt", "w");
-        fwrite($myfile, strip_tags($sub->onlinetext));
-        fclose($myfile);
-    }
     // create the ad hoc task.
     $sentiment_analyzer = new block_sentimentanalysis_task();
     // set blocking if required (it probably isn't)
@@ -59,11 +48,11 @@ if($sentimentanalysis->is_cancelled())
     // add custom data
 
     $sentiment_analyzer->set_custom_data(array(
-        'directory_name' => $dir,
+        'submissions' => $text_submissions,
     ));
+    // queue it
         \core\task\manager::queue_adhoc_task($sentiment_analyzer);
         print_object($sentiment_analyzer);
-    // queue it
 } else
 {
     echo $OUTPUT->header();

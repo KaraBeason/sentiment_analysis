@@ -27,7 +27,8 @@ class block_sentimentanalysis extends block_base {
 
         global $COURSE;
 
-        $url = new moodle_url('/blocks/sentimentanalysis/view.php', array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
+        $url = new moodle_url('/blocks/sentimentanalysis/view.php'
+            , array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
         $this->content->footer = html_writer::link($url, get_string('chooseassignlink', 'block_sentimentanalysis'));
         return $this->content;
     }
