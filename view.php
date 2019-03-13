@@ -1,9 +1,10 @@
 <?php
-
-require_once('../../config.php');
-require_once('sentimentanalysis_form.php');
-include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
+namespace block_sentimentanalysis;
+use block_sentimentanalysis\sentimentanalysis_form;
 use block_sentimentanalysis\task\block_sentimentanalysis_task;
+require_once('../../config.php');
+require_once(__DIR__ . '/classes/sentimentanalysis_form.php');
+include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
 
 global $DB, $OUTPUT, $PAGE;
 

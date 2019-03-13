@@ -1,4 +1,7 @@
 <?php
+namespace block_sentimentanalysis;
+use block_sentimentanalysis\lib;
+use moodleform;
 require_once("{$CFG->libdir}/formslib.php");
 
 class sentimentanalysis_form extends moodleform {
@@ -7,18 +10,8 @@ class sentimentanalysis_form extends moodleform {
 
         $mform =& $this->_form;
         $mform->addElement('header','displayinfo', get_string('availassigns', 'block_sentimentanalysis'));
-
         // Display assignments that have online text submissions.
-        global $DB;
-        $result = $DB->get_records_sql('SELECT *
-                                        FROM mdl_assignsubmission_onlinetext t
-                                        INNER JOIN mdl_assign asn ON t.assignment = asn.id');
-        $assignments = array();
-        foreach ($result as $row)
-        {
-            $assignments[$row->id] = $row->name;
-        }
-
+        $assignments = lib::get_available_assignments();
         $mform->addElement('select', 'assignment', get_string('chosenassign', 'block_sentimentanalysis'), $assignments);
         $mform->setType('assignment', PARAM_RAW);
         // hidden elements
