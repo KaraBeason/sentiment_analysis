@@ -34,14 +34,6 @@ if($sentimentanalysis->is_cancelled())
     redirect($courseurl);
 } else if ($fromform = $sentimentanalysis->get_data())
 {
-    // Submission is validated and ad hoc task is called.
-    // Read all online text submissions for selected assignment into a temporary directory.
-    // TODO: move this code to another file? seems messy here.
-    $assignment = $fromform->assignment;
-    $text_submissions = $DB->get_records_sql("SELECT *
-                                        FROM mdl_assignsubmission_onlinetext t
-                                        WHERE t.assignment = '$assignment'");
-
     // create the ad hoc task.
     $sentiment_analyzer = new block_sentimentanalysis_task();
     // set blocking if required (it probably isn't)
@@ -49,7 +41,7 @@ if($sentimentanalysis->is_cancelled())
     // add custom data
 
     $sentiment_analyzer->set_custom_data(array(
-        'submissions' => $text_submissions,
+        'assignment' => $fromform->assignment,
     ));
     // queue it
         \core\task\manager::queue_adhoc_task($sentiment_analyzer);
