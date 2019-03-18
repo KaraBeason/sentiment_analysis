@@ -1,18 +1,22 @@
 <?php
-namespace block_sentimentanalysis;
-use block_sentimentanalysis\lib;
-use moodleform;
-require_once("{$CFG->libdir}/formslib.php");
 
-class sentimentanalysis_form extends moodleform {
+require_once("{$CFG->libdir}/formslib.php");
+require_once (__DIR__ . '/lib.php');
+
+class block_sentimentanalysis_selection_form extends moodleform {
 
     function definition() {
 
         $mform =& $this->_form;
         $mform->addElement('header','displayinfo', get_string('availassigns', 'block_sentimentanalysis'));
         // Display assignments that have online text submissions.
-        $assignments = lib::get_available_assignments();
-        $mform->addElement('select', 'assignment', get_string('chosenassign', 'block_sentimentanalysis'), $assignments);
+        $assignments = get_available_assignments();
+        $options = array();
+        foreach ($assignments as $id => $assignname) {
+            // Fix up some markup for the form
+            $options[$id] = get_string('assignment') . ' ' . $assignname;
+        }
+        $mform->addElement('select', 'assignment', get_string('chosenassign', 'block_sentimentanalysis'), $options);
         $mform->setType('assignment', PARAM_RAW);
         // hidden elements
         $mform->addElement('hidden', 'blockid');

@@ -1,9 +1,13 @@
 <?php
-namespace block_sentimentanalysis;
-use block_sentimentanalysis\sentimentanalysis_form;
-use block_sentimentanalysis\task\block_sentimentanalysis_task;
+
 require_once('../../config.php');
-require_once(__DIR__ . '/classes/sentimentanalysis_form.php');
+require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/selection_form.php');
+
+use block_sentimentanalysis\task\block_sentimentanalysis_task;
+
+
+
 include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
 
 global $DB, $OUTPUT, $PAGE;
@@ -22,34 +26,34 @@ $PAGE->set_url('/blocks/sentimentanalysis/view.php', array('id' => $courseid));
 $PAGE->set_pagelayout('standard');
 $PAGE->set_heading(get_string('chooseassign', 'block_sentimentanalysis'));
 
-$sentimentanalysis = new sentimentanalysis_form();
+$submittedform = new block_sentimentanalysis_selection_form();
 $toform['blockid'] = $blockid;
 $toform['courseid'] = $courseid;
-$sentimentanalysis->set_data($toform);
+$submittedform->set_data($toform);
 
-if($sentimentanalysis->is_cancelled())
+if($submittedform->is_cancelled())
 {
     // Cancelled form redirects to the course main page.
     $courseurl = new moodle_url('/course/view.php', array('id' => $courseid));
     redirect($courseurl);
-} else if ($fromform = $sentimentanalysis->get_data())
+} else if ($data = $submittedform->get_data())
 {
     // create the ad hoc task.
-    $sentiment_analyzer = new block_sentimentanalysis_task();
+    $task = new block_sentimentanalysis_task();
     // set blocking if required (it probably isn't)
     //     $sentiment_analyzer->set_blocking(true);
     // add custom data
 
-    $sentiment_analyzer->set_custom_data(array(
-        'assignment' => $fromform->assignment,
+    $task->set_custom_data(array(
+        'assignment' => $data->assignment,
     ));
     // queue it
-        \core\task\manager::queue_adhoc_task($sentiment_analyzer);
-        print_object($sentiment_analyzer);
+        \core\task\manager::queue_adhoc_task($task);
+        print_object($task);
 } else
 {
     echo $OUTPUT->header();
-    $sentimentanalysis->display();
+    $submittedform->display();
     echo $OUTPUT->footer();
 }
 
