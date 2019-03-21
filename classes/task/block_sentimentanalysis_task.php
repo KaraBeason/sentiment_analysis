@@ -10,16 +10,18 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $assignment = $this->get_custom_data();
         $assignment = $assignment->assignment;
-        $text_submissions = $DB->get_records_sql("SELECT *
+        $text_submissions = $DB->get_records_sql("SELECT usr.username, t.onlinetext
                                         FROM mdl_assignsubmission_onlinetext t
-                                        WHERE t.assignment = '$assignment'");
+                                        INNER JOIN mdl_assign_submission sub on sub.assignment = t.assignment
+                                        INNER JOIN mdl_user usr on usr.id = sub.userid
+                                        WHERE t.assignment = '$assignment' and sub.status = 'submitted'");
+                                        
         // Make temp directory and write all assignment submissions to it.
         $dir = make_temp_directory('sentiment_analysis');
-        foreach ($text_submissions as $sub)
+        foreach ($text_submissions as $username => $onlinetext)
         {
-            // TODO: need unique way to identify whose assignment it is.
-            $myfile = fopen($dir . "\submission_" . $sub->id . ".txt", "w");
-            fwrite($myfile, strip_tags($sub->onlinetext));
+            $myfile = fopen($dir . "\\" . $username . "_" . $assignment . ".txt", "w");
+            fwrite($myfile, strip_tags($onlinetext->onlinetext));
             fclose($myfile);
         }
 
@@ -29,5 +31,6 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         } else {
             echo "PDF not created";
         }
+
     }
 }
