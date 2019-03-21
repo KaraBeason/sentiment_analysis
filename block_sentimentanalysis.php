@@ -20,7 +20,7 @@ class block_sentimentanalysis extends block_base {
         $this->content         =  new stdClass;
         if(has_capability('block/sentimentanalysis:viewpages', $context))
         {
-            $this->content->text   = "ad hoc task to analyze sentiment in assignments<br>" . $this->get_current_assignments();
+            $this->content->text   = "ad hoc task to analyze sentiment in assignments<br>";
             $this->content->text .= "<br>context: " . $this->page->context->id;
         }
         else {

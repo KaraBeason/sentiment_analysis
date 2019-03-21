@@ -3,18 +3,18 @@
 /**
  * Returns a list of all assignments that have associated online text submissions.
  */
-function get_available_assignments($courseid, array $assignids)
+function get_available_assignments($courseid, array $assignids = null)
 {
     global $DB;
 
     $params = [ 'course' => $courseid ];
 
     // Fix up SQL for course assignments
-    $sql = 'SELECT id, name '
-         . '  FROM mdl_assignsubmission_onlinetext t '
+    $sql = 'SELECT asn.id, name '
+         . ' FROM mdl_assignsubmission_onlinetext t '
          . ' INNER JOIN mdl_assign asn ON t.assignment = asn.id '
            // join for the course in here
-         . ' WHERE blah blah :courseid = course';
+         . ' WHERE course = ' . $courseid;
 
     // Is there a set of assignments to filter further?
     if ($assignids) {

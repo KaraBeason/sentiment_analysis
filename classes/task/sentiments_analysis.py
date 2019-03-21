@@ -50,6 +50,3 @@ for filename in os.listdir(directory):
             sentiments.append(line.sentiment_assessments)
 
 print_report("test", sentiments)
-
-print "hello from python script!"
-
