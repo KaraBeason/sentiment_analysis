@@ -56,19 +56,3 @@ if($submittedform->is_cancelled())
     $submittedform->display();
     echo $OUTPUT->footer();
 }
-
-// TODO: this should be used when creating the report file FROM the results of the python script.
-// File creation as seen in moodle File API.
-//    $fs = get_file_storage();
-//        print_object($sub);
-//    // Prepare file record object
-//        $fileinfo = array(
-//            'contextid' => $context->id, // ID of context
-//            'component' => 'block_sentimentanalysis',     // usually = table name
-//            'filearea' => 'temp',     // usually = table name
-//            'itemid' => 0,               // usually = ID of row in table
-//            'filepath' => '/'. $dir . '/',           // any path beginning and ending in /
-//            'filename' => 'submission_' . $sub->id . '.txt'); // any filename
-//
-//    // Create file containing text 'hello world'
-//        $fs->create_file_from_string($fileinfo, "hi there");

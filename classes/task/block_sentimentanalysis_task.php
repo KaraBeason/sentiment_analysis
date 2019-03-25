@@ -1,12 +1,14 @@
 <?php
 namespace block_sentimentanalysis\task;
+use \context_user;
 class block_sentimentanalysis_task extends \core\task\adhoc_task {
     /**
      *
      */
     public function execute()
     {
-        global $DB;
+        global $DB, $USER;
+
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $assignment = $this->get_custom_data();
         $assignment = $assignment->assignment;
@@ -30,6 +32,28 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             echo "PDF Created Successfully";
         } else {
             echo "PDF not created";
+        }
+        // Save the file into teacher's private file area.
+        $context = context_user::instance($USER->id);
+        // File creation as seen in moodle File API.
+        $fs = get_file_storage();
+        //    // Prepare file record object
+        $record = new \stdClass();
+        $record->filearea   = 'private';
+        $record->component  = 'user';
+        $record->filepath   = '\/sentimentanalysis\/';
+        $record->itemid     = 0;
+        $record->contextid  = $context->id;
+        $record->userid     = $USER->id;
+
+        $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
+                $record->itemid, $record->filepath, "sentiment_test_file.txt");
+    
+        if ($fs->create_file_from_string($record, "hi I'm a test file")) {
+            // File created successfully.
+            mtrace("---- File uploaded successfully as {$record->filename}.");
+        } else {
+            mtrace("---- Unknown failure during creation.");
         }
 
     }
