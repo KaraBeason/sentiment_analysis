@@ -9,7 +9,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
     public function execute()
     {
         global $DB, $USER;
-        $path_to_temp_folder = 'C:\\xampp\\moodledata\\temp\\sentiment_analysis'; // Path to where the work is done during the task.
+        $path_to_temp_folder = 'C:\\xampp\\moodledata\\temp\\sentiment_analysis\\'; // Path to where the work is done during the task.
 
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $assignment = $this->get_custom_data();
@@ -39,8 +39,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         // Create a file record and save the file produced by the python script into the teacher's private file area.
         $fs = get_file_storage();
 
-        $filepath = 'C:\\xampp\\moodledata\/temp\/sentiment_analysis\\';
-        $filename = 'test.pdf';
+        $filename = 'output.pdf';
         $context = context_user::instance($USER->id);
        
         // Prepare file record object
@@ -55,7 +54,13 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $datetime = new \DateTime('NOW');
         $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
                 $record->itemid, $record->filepath, "sentiment_report " . $datetime->format('Y-m-d H:i:s') . '.pdf');
-        if ($fs->create_file_from_pathname($record, $filepath . $filename))
+        // Ensure file is readable/exists.
+        if (!is_readable($path_to_temp_folder . $filename))
+        {
+            mtrace("---- File '. $path_to_temp_folder . $filename . ' does not exist or is not readble.");
+            return;
+        }
+        if ($fs->create_file_from_pathname($record, $path_to_temp_folder . $filename))
         {
             mtrace("---- File uploaded successfully as {$record->filename}.");
         } else {

@@ -47,4 +47,4 @@ for filename in os.listdir(directory):
             line = TextBlob(line)
             sentiments.append(line.sentiment_assessments)
 
-print_report("test", sentiments)
+print_report("output", sentiments)
