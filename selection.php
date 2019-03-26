@@ -10,7 +10,7 @@ use block_sentimentanalysis\task\block_sentimentanalysis_task;
 
 include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 // Check for all required variables.
 $courseid = required_param('courseid', PARAM_INT);
@@ -46,7 +46,8 @@ if($submittedform->is_cancelled())
 
     $task->set_custom_data(array(
         'assignment' => $data->assignment,
-    ));
+        'user' => $USER->id
+        ));
     // queue it
         \core\task\manager::queue_adhoc_task($task);
         print_object($task);

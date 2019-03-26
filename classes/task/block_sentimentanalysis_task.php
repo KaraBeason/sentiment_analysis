@@ -1,6 +1,7 @@
 <?php
 namespace block_sentimentanalysis\task;
 use \context_user;
+
 class block_sentimentanalysis_task extends \core\task\adhoc_task {
     /**
      *
@@ -8,6 +9,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
     public function execute()
     {
         global $DB, $USER;
+        $path_to_temp_folder = 'C:\\xampp\\moodledata\\temp\\sentiment_analysis'; // Path to where the work is done during the task.
 
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $assignment = $this->get_custom_data();
@@ -26,18 +28,22 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             fwrite($myfile, strip_tags($onlinetext->onlinetext));
             fclose($myfile);
         }
-
-        exec('C:\Python27\python '. __DIR__ . '\\sentiments_analysis.py C:\\xampp\\moodledata\/temp\/sentiment_analysis', $output, $return);
+        // Execute python script to process the text submissions.
+        exec('C:\Python27\python '. __DIR__ . '\\sentiments_analysis.py ' . $path_to_temp_folder, $output, $return);
         if (!$return) {
-            echo "PDF Created Successfully";
+            mtrace("---- Sentiment analylsis completed.");
         } else {
-            echo "PDF not created";
+            mtrace("---- Unknown failure during sentiment analysis.");
         }
-        // Save the file into teacher's private file area.
-        $context = context_user::instance($USER->id);
-        // File creation as seen in moodle File API.
+
+        // Create a file record and save the file produced by the python script into the teacher's private file area.
         $fs = get_file_storage();
-        //    // Prepare file record object
+
+        $filepath = 'C:\\xampp\\moodledata\/temp\/sentiment_analysis\\';
+        $filename = 'test.pdf';
+        $context = context_user::instance($USER->id);
+       
+        // Prepare file record object
         $record = new \stdClass();
         $record->filearea   = 'private';
         $record->component  = 'user';
@@ -46,15 +52,23 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $record->contextid  = $context->id;
         $record->userid     = $USER->id;
 
+        $datetime = new \DateTime('NOW');
         $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
-                $record->itemid, $record->filepath, "sentiment_test_file.txt");
-    
-        if ($fs->create_file_from_string($record, "hi I'm a test file")) {
-            // File created successfully.
+                $record->itemid, $record->filepath, "sentiment_report " . $datetime->format('Y-m-d H:i:s') . '.pdf');
+        if ($fs->create_file_from_pathname($record, $filepath . $filename))
+        {
             mtrace("---- File uploaded successfully as {$record->filename}.");
         } else {
             mtrace("---- Unknown failure during creation.");
         }
-
+        // Clean up temp folder.
+        $files = glob($path_to_temp_folder . '\\*');
+        foreach($files as $file)
+        {
+            if (is_file($file))
+            {
+                unlink($file);
+            }
+        }
     }
 }
