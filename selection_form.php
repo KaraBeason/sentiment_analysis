@@ -1,7 +1,8 @@
 <?php
-
 require_once("{$CFG->libdir}/formslib.php");
 require_once (__DIR__ . '/lib.php');
+
+defined('MOODLE_INTERNAL') || die();
 
 class block_sentimentanalysis_selection_form extends moodleform {
 

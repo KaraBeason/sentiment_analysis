@@ -1,4 +1,5 @@
 <?php
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Returns a list of all assignments that have associated online text submissions.

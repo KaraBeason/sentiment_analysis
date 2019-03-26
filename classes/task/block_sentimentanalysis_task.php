@@ -1,6 +1,7 @@
 <?php
 namespace block_sentimentanalysis\task;
 use \context_user;
+defined('MOODLE_INTERNAL') || die();
 
 class block_sentimentanalysis_task extends \core\task\adhoc_task {
     /**
