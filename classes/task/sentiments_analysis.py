@@ -23,6 +23,7 @@ def print_report(report_name, sentiments_list):
     y = height - 100
     for sentiment in sentiments_list:
         # Parse file name to get student username
+        
         rep.drawString(100, y, "Student: ")
         for name, value in sentiment.__dict__.items():
             y = y - 15
@@ -43,7 +44,6 @@ for filename in os.listdir(directory):
         line = ""
         with codecs.open(filename, "r",encoding='utf-8', errors='ignore') as fdata:
             line += fdata.read()
-
             line = TextBlob(line)
             sentiments.append(line.sentiment_assessments)
 

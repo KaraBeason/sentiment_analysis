@@ -1,14 +1,12 @@
 <?php
-
 require_once('../../config.php');
 require_once(__DIR__ . '/lib.php');
 require_once(__DIR__ . '/selection_form.php');
+include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
 
 use block_sentimentanalysis\task\block_sentimentanalysis_task;
 
-
-
-include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
+defined('MOODLE_INTERNAL') || die();
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
@@ -40,15 +38,12 @@ if($submittedform->is_cancelled())
 {
     // create the ad hoc task.
     $task = new block_sentimentanalysis_task();
-    // set blocking if required (it probably isn't)
-    //     $sentiment_analyzer->set_blocking(true);
-    // add custom data
-
+    // Pass ad hoc task the id of the assignment and the current user.
     $task->set_custom_data(array(
         'assignment' => $data->assignment,
         'user' => $USER->id
         ));
-    // queue it
+    // Queue it.
         \core\task\manager::queue_adhoc_task($task);
         print_object($task);
 } else

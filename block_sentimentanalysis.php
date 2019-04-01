@@ -1,6 +1,9 @@
 <?php
 
 require_once(__DIR__ . '/lib.php');
+include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
+
+use block_sentimentanalysis\task\block_sentimentanalysis_task;
 
 
 class block_sentimentanalysis extends block_base {
@@ -20,16 +23,13 @@ class block_sentimentanalysis extends block_base {
         $this->content         =  new stdClass;
         if(has_capability('block/sentimentanalysis:viewpages', $context))
         {
-            $this->content->text   = "ad hoc task to analyze sentiment in assignments<br>";
-            $this->content->text .= "<br>context: " . $this->page->context->id;
+            $this->content->text   = "Task to analyze sentiment in assignments<br>";
         }
-        else {
-            $this->content->text = "not logged in...";
-        }
-
+       
         $url = new moodle_url('/blocks/sentimentanalysis/selection.php'
             , array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
-        $this->content->footer = html_writer::link($url, get_string('chooseassignlink', 'block_sentimentanalysis'));
+        $this->content->footer = html_writer::tag('button', get_string('executetask', 'block_sentimentanalysis'),
+            array("onclick"=>$this->execute_adhoc_task()));
         return $this->content;
     }
 
@@ -48,4 +48,19 @@ class block_sentimentanalysis extends block_base {
             'course-view' => true);
     }
 
+    // Execute sentiment analysis task on all assignments configured from block instance config.
+    public function execute_adhoc_task()
+    {
+        global $USER;
+        // create the ad hoc task.
+        $task = new block_sentimentanalysis_task();
+        // Pass ad hoc task the id of the assignment and the current user.
+        $task->set_custom_data(array(
+            'assignment' => $this->config->assignments,
+            'user' => $USER->id
+            ));
+        // Queue it.
+        \core\task\manager::queue_adhoc_task($task);
+        print_object($task);
+    }
 }
