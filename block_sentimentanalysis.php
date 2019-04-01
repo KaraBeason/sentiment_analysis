@@ -1,10 +1,6 @@
 <?php
 
 require_once(__DIR__ . '/lib.php');
-include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
-
-use block_sentimentanalysis\task\block_sentimentanalysis_task;
-
 
 class block_sentimentanalysis extends block_base {
     public function init() {
@@ -12,7 +8,7 @@ class block_sentimentanalysis extends block_base {
     }
 
     public function get_content() {
-        global $COURSE;
+        global $COURSE, $OUTPUT;
 
         if ($this->content !== null) {
             return $this->content;
@@ -21,15 +17,9 @@ class block_sentimentanalysis extends block_base {
         $context = context_course::instance($COURSE->id);
 
         $this->content         =  new stdClass;
-        if(has_capability('block/sentimentanalysis:viewpages', $context))
-        {
-            $this->content->text   = "Task to analyze sentiment in assignments<br>";
-        }
-       
-        $url = new moodle_url('/blocks/sentimentanalysis/selection.php'
-            , array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
-        $this->content->footer = html_writer::tag('button', get_string('executetask', 'block_sentimentanalysis'),
-            array("onclick"=>$this->execute_adhoc_task()));
+        $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', array('blockid' => $this->instance->id));
+        $this->content->text = '<a href="'.$executetask.'">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
+
         return $this->content;
     }
 
@@ -48,19 +38,4 @@ class block_sentimentanalysis extends block_base {
             'course-view' => true);
     }
 
-    // Execute sentiment analysis task on all assignments configured from block instance config.
-    public function execute_adhoc_task()
-    {
-        global $USER;
-        // create the ad hoc task.
-        $task = new block_sentimentanalysis_task();
-        // Pass ad hoc task the id of the assignment and the current user.
-        $task->set_custom_data(array(
-            'assignment' => $this->config->assignments,
-            'user' => $USER->id
-            ));
-        // Queue it.
-        \core\task\manager::queue_adhoc_task($task);
-        print_object($task);
-    }
 }
