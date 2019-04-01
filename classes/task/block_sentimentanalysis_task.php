@@ -10,12 +10,14 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
      */
     public function execute()
     {
-        global $DB, $USER;
+        global $DB;
         $path_to_temp_folder = 'C:\\xampp\\moodledata\\temp\\sentiment_analysis\\'; // Path to where the work is done during the task.
-
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
-        $assignment_list = $this->get_custom_data();
-        $assignments = $assignment_list->assignment;
+        $custom_data = $this->get_custom_data();
+        $userid = $custom_data->user;
+        $assignments = $custom_data->assignment;
+        // Datetime to differentiate between iterations of the task reports.
+        $datetime = new \DateTime('NOW');
         foreach ($assignments as $assignment)
         {
             $text_submissions = $DB->get_records_sql("SELECT usr.username, t.onlinetext
@@ -44,7 +46,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             $fs = get_file_storage();
             // Name of the file expected from the python script.
             $filename = 'output.pdf';
-            $context = context_user::instance($USER->id);
+            $context = context_user::instance($userid);
         
             // Prepare file record object
             $record = new \stdClass();
@@ -53,9 +55,8 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             $record->filepath   = '\\sentimentanalysis\\';
             $record->itemid     = 0;
             $record->contextid  = $context->id;
-            $record->userid     = $USER->id;
+            $record->userid     = $userid;
 
-            $datetime = new \DateTime('NOW');
             $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
                     $record->itemid, $record->filepath, $assignment . '_' . $datetime->format('Y-m-d H:i:s') . '.pdf');
             // Ensure file is readable/exists.
