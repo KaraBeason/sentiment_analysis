@@ -26,7 +26,7 @@ def is_new_page(report, y, value, height):
         return y
 
 
-def print_report(report_name, sentiments_list):
+def print_report(report_name, sentiments_list, overall):
     save_name = os.path.join(directory, report_name + ".pdf")
     rep = canvas.Canvas(save_name, pagesize=letter)
     width, height = letter 
