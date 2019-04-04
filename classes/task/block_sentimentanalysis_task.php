@@ -20,7 +20,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $datetime = new \DateTime('NOW');
         foreach ($assignments as $assignment)
         {
-            $text_submissions = $DB->get_records_sql("SELECT usr.username, t.onlinetext
+            $text_submissions = $DB->get_recordset_sql("SELECT usr.username, t.onlinetext
                                             FROM mdl_assignsubmission_onlinetext t
                                             INNER JOIN mdl_assign_submission sub on sub.assignment = t.assignment
                                             INNER JOIN mdl_user usr on usr.id = sub.userid
@@ -28,10 +28,10 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                                             
             // Make temp directory and write all assignment submissions to it.
             $dir = make_temp_directory('sentiment_analysis');
-            foreach ($text_submissions as $username => $onlinetext)
+            foreach ($text_submissions as $record => $row)
             {
-                $myfile = fopen($dir . "\\" . $username . "_" . $assignment . ".txt", "w");
-                fwrite($myfile, strip_tags($onlinetext->onlinetext));
+                $myfile = fopen($dir . "\\" . $row->username . "_" . $assignment . ".txt", "w");
+                fwrite($myfile, strip_tags($row->onlinetext));
                 fclose($myfile);
             }
             // Execute python script to process the text submissions.

@@ -11,7 +11,7 @@ function get_available_assignments($courseid, array $assignids = null)
     $params = [ 'course' => $courseid ];
 
     // Fix up SQL for course assignments
-    $sql = 'SELECT asn.id, name '
+    $sql = 'SELECT DISTINCT asn.id, name '
          . ' FROM mdl_assignsubmission_onlinetext t '
          . ' INNER JOIN mdl_assign asn ON t.assignment = asn.id '
            // join for the course in here

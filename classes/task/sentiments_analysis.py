@@ -31,14 +31,16 @@ def print_report(report_name, sentiments_list, overall):
     rep = canvas.Canvas(save_name, pagesize=letter)
     width, height = letter 
     y = height - 100
-    # Overall Sentiment Analysis First
+    # # Overall Sentiment Analysis First
     rep.drawString(100, y, "Overall Sentiment: ")
+    y = is_new_page(rep, y, 15, height)
     for label, val in overall.__dict__.items():
-        y = is_new_page(rep, y, 15, height)
-        rep.drawString(125, y, str(label))
-        y = is_new_page(rep, y, 15, height)
-        if isinstance(val, float):
-            rep.drawString(125, y, str(val))
+        if str(label) is "sentiment_assessments":
+            y = is_new_page(rep, y, 15, height)
+            rep.drawString(125, y, str(label))
+            y = is_new_page(rep, y, 15, height)
+            if isinstance(val, float):
+                rep.drawString(125, y, str(val))
     rep.showPage()
     # Sentiment Analysis by Student
     for user, sentiment in sentiments_list.iteritems():
@@ -54,12 +56,14 @@ def print_report(report_name, sentiments_list, overall):
                 for word in value:
                     y = is_new_page(rep, y, 15, height)
                     rep.drawString(125, y, str(word))
+        rep.showPage()
     rep.save()
 
 
 sentiments = dict()
 overall = ""
 for filename in os.listdir(directory):
+    i = 1
     if filename.endswith(".txt"):
         username = filename.split('_')[0]
         filename = os.path.join(directory, filename)
@@ -69,6 +73,7 @@ for filename in os.listdir(directory):
             overall += line
             line = TextBlob(line)
             sentiments[username] = line.sentiment_assessments
+        i += 1
 overall = TextBlob(overall)
 overall_sentiment = overall.sentiment_assessments
 print_report("output", sentiments, overall)
