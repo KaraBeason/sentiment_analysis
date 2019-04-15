@@ -28,5 +28,4 @@ $task->set_custom_data(array(
 
 // Redirect to main course page.
 $url= new moodle_url('/course/view.php', array('id' => $courseid));
-// echo "You will recieve an e-mail when your sentiment analysis reports have completed.";
-redirect($url, 'You will recieve an e-mail when your sentiment analysis reports have completed.');
+redirect($url, 'You will recieve a notification when your sentiment analysis reports have completed.');
