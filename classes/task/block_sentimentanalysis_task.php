@@ -22,10 +22,10 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         {
             $text_submissions = $DB->get_recordset_sql("SELECT usr.username, t.onlinetext
                                             FROM mdl_assignsubmission_onlinetext t
-                                            INNER JOIN mdl_assign_submission sub on sub.assignment = t.assignment
+                                            INNER JOIN mdl_assign_submission sub on sub.id = t.submission
                                             INNER JOIN mdl_user usr on usr.id = sub.userid
                                             WHERE t.assignment = '$assignment' and sub.status = 'submitted'");
-                                            
+
             // Make temp directory and write all assignment submissions to it.
             $dir = make_temp_directory('sentiment_analysis');
             foreach ($text_submissions as $record => $row)
@@ -99,5 +99,5 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
 
         $messageid = message_send($message);
 
+        }
     }
-}
