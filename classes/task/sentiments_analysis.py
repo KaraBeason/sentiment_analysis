@@ -4,6 +4,7 @@ import sys
 import codecs
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.colors import HexColor
 
 if len(sys.argv) != 2:
     print("Usage: python sentiments_analysis.py <directory>")
@@ -52,7 +53,15 @@ def print_report(report_name, sentiments_list, overall):
             y = is_new_page(rep, y, 15, height)
 
             if isinstance(value, float):
+                if (name == "polarity"):
+                    if (value < -0.05):
+                        rep.setFillColor(HexColor('#FF0000'))
+                    elif (value > 0.05):
+                        rep.setFillColor(HexColor('#008000'))
+                    else:
+                        rep.setFillColor(HexColor('#808080'))
                 rep.drawString(125, y, str(value))
+                rep.setFillColor(HexColor('#000000'))
             else:
                 for word in value:
                     y = is_new_page(rep, y, 15, height)
