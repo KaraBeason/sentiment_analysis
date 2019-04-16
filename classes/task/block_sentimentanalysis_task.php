@@ -20,11 +20,12 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $datetime = new \DateTime('NOW');
         foreach ($assignments as $assignment)
         {
-            $text_submissions = $DB->get_recordset_sql("SELECT usr.firstname, usr.lastname, t.onlinetext
-                                            FROM mdl_assignsubmission_onlinetext t
-                                            INNER JOIN mdl_assign_submission sub on sub.id = t.submission
-                                            INNER JOIN mdl_user usr on usr.id = sub.userid
-                                            WHERE t.assignment = '$assignment' and sub.status = 'submitted'");
+            $sql = "SELECT usr.firstname, usr.lastname, t.onlinetext
+                FROM mdl_assignsubmission_onlinetext t
+                INNER JOIN mdl_assign_submission sub on sub.id = t.submission
+                INNER JOIN mdl_user usr on usr.id = sub.userid
+                WHERE t.assignment = '$assignment' and sub.status = 'submitted'";
+            $text_submissions = $DB->get_recordset_sql($sql);
 
             $sql = "SELECT asn.name 
                     FROM mdl_assign asn 
