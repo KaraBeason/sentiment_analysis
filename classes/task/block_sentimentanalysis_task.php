@@ -26,12 +26,18 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                                             INNER JOIN mdl_user usr on usr.id = sub.userid
                                             WHERE t.assignment = '$assignment' and sub.status = 'submitted'");
 
+            $sql = "SELECT asn.name 
+                    FROM mdl_assign asn 
+                    WHERE asn.id = $assignment";
+            $record = $DB->get_record_sql($sql);
+            $assign_name = $record->name;
+
             // Make temp directory and write all assignment submissions to it.
             $dir = make_temp_directory('sentiment_analysis');
             foreach ($text_submissions as $record => $row)
             {
                 $name = $row->firstname . " " . $row->lastname;
-                $myfile = fopen($dir . "\\" . $name . "_" . $assignment . ".txt", "w");
+                $myfile = fopen($dir . "\\" . $name . "_" . $assign_name . ".txt", "w");
                 fwrite($myfile, strip_tags($row->onlinetext));
                 fclose($myfile);
             }
@@ -59,7 +65,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             $record->userid     = $userid;
 
             $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
-                    $record->itemid, $record->filepath, $assignment . '_' . $datetime->format('Y-m-d H:i:s') . '.pdf');
+                    $record->itemid, $record->filepath, $assign_name . ' ' . $datetime->format('Y-m-d H:i:s') . '.pdf');
             // Ensure file is readable/exists.
             if (!is_readable($path_to_temp_folder . $filename))
             {
