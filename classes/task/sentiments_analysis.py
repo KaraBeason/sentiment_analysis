@@ -35,21 +35,22 @@ def print_report(report_name, sentiments_list, overall):
     rep.drawString(100, y, "Overall Sentiment: ")
     y = is_new_page(rep, y, 15, height)
     for label, val in overall.__dict__.items():
-        if str(label) is "sentiment_assessments":
-            y = is_new_page(rep, y, 15, height)
-            rep.drawString(125, y, str(label))
-            y = is_new_page(rep, y, 15, height)
-            if isinstance(val, float):
-                rep.drawString(125, y, str(val))
+        y = is_new_page(rep, y, 15, height)
+        rep.drawString(125, y, str(label))
+        y = is_new_page(rep, y, 15, height)
+        if isinstance(val, float):
+            rep.drawString(125, y, str(val))
     rep.showPage()
     # Sentiment Analysis by Student
     for user, sentiment in sentiments_list.iteritems():
+        y = height - 100
         rep.drawString(100, y, "Student Username: ")
         rep.drawString(225, y, user)
         for name, value in sentiment.__dict__.items():
             y = is_new_page(rep, y, 15, height)
             rep.drawString(125, y, str(name))
             y = is_new_page(rep, y, 15, height)
+
             if isinstance(value, float):
                 rep.drawString(125, y, str(value))
             else:
