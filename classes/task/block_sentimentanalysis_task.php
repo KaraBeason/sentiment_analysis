@@ -100,8 +100,8 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $message->subject = 'Sentiment Analysis Complete';
         $message->fullmessage = 'Please check the "Sentiment Analysis" folder in your private file area to view reports.';
         $message->fullmessageformat = FORMAT_MARKDOWN;
-        $message->fullmessagehtml = '<p>Please checck the \"Sentiment Analysis\" folder in your private file area to view reports.</p>';
-        $message->smallmessage = 'Please checck the \"Sentiment Analysis\" folder in your private file area to view reports.';
+        $message->fullmessagehtml = '<p>Please check the "Sentiment Analysis" folder in your private file area to view reports.</p>';
+        $message->smallmessage = 'Please check the "Sentiment Analysis" folder in your private file area to view reports.';
         
         $message->courseid = 4; // This is required in recent versions, use it from 3.2 on https://tracker.moodle.org/browse/MDL-47162
 
