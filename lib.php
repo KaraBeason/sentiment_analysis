@@ -31,9 +31,8 @@ function get_available_assignments($courseid, array $assignids = null)
 {
     global $DB;
 
-    $sql = 'SELECT DISTINCT asn.id, name '
-         . ' FROM mdl_assignsubmission_onlinetext t '
-         . ' INNER JOIN mdl_assign asn ON t.assignment = asn.id '
+    $sql = 'SELECT DISTINCT id, name '
+         . ' FROM mdl_assign '
          . ' WHERE course = ' . $courseid;
 
     // Submit the query

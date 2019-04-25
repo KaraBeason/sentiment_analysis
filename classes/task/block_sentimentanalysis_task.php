@@ -50,7 +50,10 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                 INNER JOIN mdl_user usr on usr.id = sub.userid
                 WHERE t.assignment = '$assignment' and sub.status = 'submitted'";
             $text_submissions = $DB->get_recordset_sql($sql);
-
+            if ($text_submissions->valid() == false)
+            {
+                continue;
+            }
             $sql = "SELECT asn.name 
                     FROM mdl_assign asn 
                     WHERE asn.id = $assignment";
@@ -103,18 +106,17 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             } else {
                 mtrace("---- Unknown failure during creation.");
             }
-        }
-
-        // Clean up temp folder.
-        $files = glob($path_to_temp_folder . '\\*');
-        foreach($files as $file)
-        {
-            if (is_file($file))
+             // Clean up temp folder.
+            $files = glob($path_to_temp_folder . '\\*');
+            foreach($files as $file)
             {
-                unlink($file);
+                if (is_file($file))
+                {
+                    unlink($file);
+                }
             }
         }
-
+       
         // Email user to let them know their reports are completed and uploaded in their private file section.
         $message = new \core\message\message();
         $message->component = 'moodle';
