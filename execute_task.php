@@ -18,7 +18,7 @@
  * block_sentimentanalysis
  *
  * @author      Kara Beason <beasonke@appstate.edu>
- * @copyright   (c) 2017 Appalachian State Universtiy, Boone, NC
+ * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
  * @license     GNU General Public License version 3
  * @package     block_sentimentanalysis
  */

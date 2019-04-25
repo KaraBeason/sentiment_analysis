@@ -18,7 +18,7 @@
  * block_sentimentanalysis
  *
  * @author      Kara Beason <beasonke@appstate.edu>
- * @copyright   (c) 2017 Appalachian State Universtiy, Boone, NC
+ * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
  * @license     GNU General Public License version 3
  * @package     block_sentimentanalysis
  */
@@ -50,6 +50,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                 INNER JOIN mdl_user usr on usr.id = sub.userid
                 WHERE t.assignment = '$assignment' and sub.status = 'submitted'";
             $text_submissions = $DB->get_recordset_sql($sql);
+            // if result contains zero records, move on to the next assignment.
             if ($text_submissions->valid() == false)
             {
                 continue;
