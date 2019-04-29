@@ -32,11 +32,16 @@ class block_sentimentanalysis extends block_base {
     public function get_content() {
         global $COURSE, $OUTPUT;
 
+        $context = context_course::instance($COURSE->id);
+        // Check current user's capabilities.
+        if (!has_capability('moodle/course:update', $context))
+        {
+            return;
+        }
+
         if ($this->content !== null) {
             return $this->content;
         }
-
-        $context = context_course::instance($COURSE->id);
 
         $this->content         =  new stdClass;
         $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', 
