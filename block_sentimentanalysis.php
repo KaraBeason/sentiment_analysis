@@ -45,7 +45,7 @@ class block_sentimentanalysis extends block_base {
 
         $this->content         =  new stdClass;
         $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', 
-            array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
+            array('blockid' => $this->instance->id));
         $this->content->text = '<a href="'.$executetask.'">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
 
         return $this->content;

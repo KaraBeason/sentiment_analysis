@@ -28,16 +28,20 @@ include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
 use block_sentimentanalysis\task\block_sentimentanalysis_task;
 defined('MOODLE_INTERNAL') || die();
 
+require_login();
+
 global $PAGE;
 
 
 $blockid = required_param('blockid', PARAM_INT);
-$courseid = required_param('courseid', PARAM_INT);
 $PAGE->set_url('/blocks/sentimentanalysis/execute_task.php', 
-    array('blockid' => $blockid, 'courseid' => $courseid));
+    array('blockid' => $blockid));
 $instance = $DB->get_record('block_instances', array('id' => $blockid));
 $blockname = 'sentimentanalysis';
 $block = block_instance($blockname, $instance);
+//Get the courseid from the block's parent contextid.
+$courseid = (context::instance_by_id($block->instance->parentcontextid))->instanceid;
+// $courseid = $course->instanceid;
 $assignments = $block->config->assignments;
 // create the ad hoc task.
 $task = new block_sentimentanalysis_task();
