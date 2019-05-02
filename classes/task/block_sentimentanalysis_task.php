@@ -26,6 +26,7 @@ namespace block_sentimentanalysis\task;
 use \context_user;
 defined('MOODLE_INTERNAL') || die();
 
+require_login();
 /**
  *  Ad hoc task executed a python script to analyze online text submissions for an assignment
  *  for sentiment.  The resulting report is saved into the user's private file area.
