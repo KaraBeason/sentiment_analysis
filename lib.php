@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Returns a list of all assignments that have associated online text submissions.
+ * Returns a list of all assignments that have online text submission enableds.
  */
 function get_available_assignments($courseid)
 {
