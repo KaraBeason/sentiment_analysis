@@ -73,9 +73,9 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             // Execute python script to process the text submissions.
             exec('C:\Python27\python '. __DIR__ . '\\sentiments_analysis.py ' . $path_to_temp_folder, $output, $return);
             if (!$return) {
-                mtrace("---- Sentiment analylsis completed.");
+                mtrace("... Sentiment analylsis completed.");
             } else {
-                mtrace("---- Unknown failure during sentiment analysis.");
+                mtrace("... Unknown failure during sentiment analysis.");
             }
 
             // Create a file record and save the file produced by the python script into the teacher's private file area.
@@ -98,14 +98,14 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             // Ensure file is readable/exists.
             if (!is_readable($path_to_temp_folder . $filename))
             {
-                mtrace("---- File '. $path_to_temp_folder . $filename . ' does not exist or is not readable.");
+                mtrace("... File '. $path_to_temp_folder . $filename . ' does not exist or is not readable.");
                 return;
             }
             if ($fs->create_file_from_pathname($record, $path_to_temp_folder . $filename))
             {
-                mtrace("---- File uploaded successfully as {$record->filename}.");
+                mtrace("... File uploaded successfully as {$record->filename}.");
             } else {
-                mtrace("---- Unknown failure during creation.");
+                mtrace("... Unknown failure during creation.");
             }
              // Clean up temp folder.
             $files = glob($path_to_temp_folder . '\\*');
