@@ -22,8 +22,10 @@
  * @license     GNU General Public License version 3
  * @package     block_sentimentanalysis
  */
+
 namespace block_sentimentanalysis\task;
 use \context_user;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -31,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  *  for sentiment.  The resulting report is saved into the user's private file area.
  */
 class block_sentimentanalysis_task extends \core\task\adhoc_task {
-    
+
     public function execute()
     {
         global $DB;
@@ -55,8 +57,8 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             {
                 continue;
             }
-            $sql = "SELECT asn.name 
-                    FROM mdl_assign asn 
+            $sql = "SELECT asn.name
+                    FROM mdl_assign asn
                     WHERE asn.id = $assignment";
             $record = $DB->get_record_sql($sql);
             $assign_name = $record->name;
@@ -83,7 +85,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             // Name of the file expected from the python script.
             $filename = 'output.pdf';
             $context = context_user::instance($userid);
-        
+
             // Prepare file record object
             $record = new \stdClass();
             $record->filearea   = 'private';
@@ -117,7 +119,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                 }
             }
         }
-       
+
         // Email user to let them know their reports are completed and uploaded in their private file section.
         $message = new \core\message\message();
         $message->component = 'moodle';
@@ -129,7 +131,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $message->fullmessagehtml = '<p>Please check the "Sentiment Analysis" folder in your private file area to view reports.</p>';
         $message->smallmessage = 'Please check the "Sentiment Analysis" folder in your private file area to view reports.';
-        
+
         $message->courseid = 4; // This is required in recent versions, use it from 3.2 on https://tracker.moodle.org/browse/MDL-47162
 
         $messageid = message_send($message);

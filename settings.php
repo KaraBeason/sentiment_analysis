@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * block_sentimentanalysis
+ * Settings for the RSS client block.
  *
- * @author      Kara Beason <beasonke@appstate.edu>
- * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
- * @license     GNU General Public License version 3
- * @package     block_sentimentanalysis
+ * @package   block_sentimentanalysis
+ * @copyright  2019 Kara Beason (beasonke@appstate.edu)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->component = 'block_sentimentanalysis';  // Recommended since 2.0.2 (MDL-26035). Required since 3.0 (MDL-48494)
-$plugin->version = 2018120302.00;  // YYYYMMDDHH (year, month, day, 24-hr time)
-$plugin->requires = 2010112400; // YYYYMMDDHH (This is the release version for Moodle 2.0)
+if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_configtext('block_sentimentanalysis_pythonpath', get_string('pythonpath', 'block_sentimentanalysis'),
+                       get_string('pythonpathdesc', 'block_sentimentanalysis'), '', PARAM_PATH));
+}

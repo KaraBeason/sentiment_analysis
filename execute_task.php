@@ -22,43 +22,47 @@
  * @license     GNU General Public License version 3
  * @package     block_sentimentanalysis
  */
+
 require_once('../../config.php');
 require_once(__DIR__ . '/lib.php');
-include(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
+require_once(__DIR__ . '/classes/task/block_sentimentanalysis_task.php');
+
 use block_sentimentanalysis\task\block_sentimentanalysis_task;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_login();
+// We pass/fetch the block instance id
+$id = required_param('id', PARAM_INT);
 
-global $PAGE;
-
-
-$blockid = required_param('blockid', PARAM_INT);
-$PAGE->set_url('/blocks/sentimentanalysis/execute_task.php', 
-    array('blockid' => $blockid));
-$instance = $DB->get_record('block_instances', array('id' => $blockid));
-$blockname = 'sentimentanalysis';
-$block = block_instance($blockname, $instance);
-//Get the courseid from the block's parent contextid.
-$courseid = (context::instance_by_id($block->instance->parentcontextid))->instanceid;
-$context = context_course::instance($COURSE->id);
-// Check current user's capabilities.
-if (!has_capability('moodle/course:update', $context))
-{
-    return;
+$instancerec = $DB->get_record('block_instances', array('id' => $id));
+if ($instancerec) {
+    // No instance, no service
+    throw new \moodle_exception(get_string('invalidblockinstance', 'error', 'sentimentanalysis'));
 }
-// $courseid = $course->instanceid;
-$assignments = $block->config->assignments;
-// create the ad hoc task.
+
+// Block instance rec leads to parent (course) context
+$coursecontext = context_course::instance_by_id($instancerec->parentcontextid);
+
+// Now I got the course id in the instanceid member. If we puke
+// wanna go back to the course view.
+$PAGE->set_url('/course/view.php', array('id' => $coursecontext->instanceid));
+
+// Know which course we're in, so can authorize the user
+require_login($coursecontext->instanceid);
+// Check current user's capabilities.
+require_capability('moodle/course:update', $coursecontext);
+
+// At this user is authenticated, and authorized to submit the task
+$blockinstance = block_instance('sentimentanalysis', $instancerec);
+
+// Config is deserialized from text column, assignments in
+// array, create the ad hoc task and supply the needed ids
 $task = new block_sentimentanalysis_task();
-// Pass ad hoc task the id of the assignment and the current user.
 $task->set_custom_data(array(
-    'assignment' => $assignments,
+    'assignmentids' => $blockinstance->config->assignments,
     'user' => $USER->id
     ));
-// Queue it.
-\core\task\manager::queue_adhoc_task($task);
 
-// Redirect to main course page.
-$url= new moodle_url('/course/view.php', array('id' => $courseid));
-redirect($url, 'You will recieve a notification when your sentiment analysis reports have completed.');
+// Queue it, then back to the course.
+\core\task\manager::queue_adhoc_task($task);
+redirect($PAGE->url);
