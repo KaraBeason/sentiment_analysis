@@ -41,6 +41,12 @@ $blockname = 'sentimentanalysis';
 $block = block_instance($blockname, $instance);
 //Get the courseid from the block's parent contextid.
 $courseid = (context::instance_by_id($block->instance->parentcontextid))->instanceid;
+$context = context_course::instance($COURSE->id);
+// Check current user's capabilities.
+if (!has_capability('moodle/course:update', $context))
+{
+    return;
+}
 // $courseid = $course->instanceid;
 $assignments = $block->config->assignments;
 // create the ad hoc task.

@@ -27,13 +27,17 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Returns a list of all assignments that have associated online text submissions.
  */
-function get_available_assignments($courseid, array $assignids = null)
+function get_available_assignments($courseid)
 {
     global $DB;
+    
 
-    $sql = 'SELECT DISTINCT id, name '
-         . ' FROM mdl_assign '
-         . ' WHERE course = ' . $courseid;
+    $sql = 'SELECT DISTINCT asn.id, asn.name '
+         . ' FROM mdl_assign asn'
+         . ' INNER JOIN mdl_assign_plugin_config cfg on cfg.assignment = asn.id'
+         . ' WHERE asn.course = ' . $courseid
+         . ' AND cfg.plugin = "onlinetext"'
+         . ' AND cfg.value = 1';
 
     // Submit the query
     $result = $DB->get_records_sql($sql);

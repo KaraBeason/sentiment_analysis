@@ -30,7 +30,7 @@ class block_sentimentanalysis extends block_base {
     }
 
     public function get_content() {
-        global $COURSE, $OUTPUT;
+        global $COURSE;
 
         $context = context_course::instance($COURSE->id);
         // Check current user's capabilities.
@@ -65,5 +65,4 @@ class block_sentimentanalysis extends block_base {
         return array(
             'course-view' => true);
     }
-
 }
