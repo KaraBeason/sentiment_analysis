@@ -41,10 +41,10 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $custom_data = $this->get_custom_data();
         $userid = $custom_data->user;
-        $assignments = $custom_data->assignment;
+        $assignmentids = $custom_data->assignmentids;
         // Datetime to differentiate between iterations of the task reports.
         $datetime = new \DateTime('NOW');
-        foreach ($assignments as $assignment)
+        foreach ($assignmentids as $assignment)
         {
             $sql = "SELECT usr.firstname, usr.lastname, t.onlinetext
                 FROM mdl_assignsubmission_onlinetext t

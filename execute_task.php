@@ -34,14 +34,16 @@ defined('MOODLE_INTERNAL') || die();
 // We pass/fetch the block instance id
 $id = required_param('id', PARAM_INT);
 
+// Get the instance record using the block id
 $instancerec = $DB->get_record('block_instances', array('id' => $id));
-if ($instancerec) {
+if (!$instancerec) {
     // No instance, no service
     throw new \moodle_exception(get_string('invalidblockinstance', 'error', 'sentimentanalysis'));
 }
 
+$block = block_instance("sentimentanalysis", $instancerec);
 // Block instance rec leads to parent (course) context
-$coursecontext = context_course::instance_by_id($instancerec->parentcontextid);
+$coursecontext = context::instance_by_id($block->instance->parentcontextid);
 
 // Now I got the course id in the instanceid member. If we puke
 // wanna go back to the course view.

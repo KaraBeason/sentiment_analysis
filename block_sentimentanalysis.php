@@ -33,7 +33,8 @@ class block_sentimentanalysis extends block_base {
         global $COURSE;
 
         $context = context_course::instance($COURSE->id);
-        // Check current user's capabilities.
+        // Check current user's capabilities.  
+        // Only admin user or instructor for the course should view this block.
         if (!has_capability('moodle/course:update', $context))
         {
             return;
@@ -43,10 +44,11 @@ class block_sentimentanalysis extends block_base {
             return $this->content;
         }
 
-        $this->content         =  new stdClass;
+        // Link that queues the sentiment analysis task via execute_task.php
+        $this->content =  new stdClass;
         $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', 
-            array('blockid' => $this->instance->id));
-        $this->content->text = '<a href="'.$executetask.'">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
+            array('id' => $this->instance->id));
+        $this->content->text = '<a href="'.$executetask.'" class="btn btn-primary">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
 
         return $this->content;
     }
@@ -60,7 +62,7 @@ class block_sentimentanalysis extends block_base {
         return $attributes;
     }
 
-    // this block can only be added to the site front page or any course view.
+    // this block can only be added to a course view.
     public function applicable_formats() {
         return array(
             'course-view' => true);
