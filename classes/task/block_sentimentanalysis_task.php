@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * block_sentimentanalysis
+ * block_sentimentanalysis_task
  *
  * @author      Kara Beason <beasonke@appstate.edu>
  * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
@@ -29,8 +29,9 @@ use \context_user;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- *  Ad hoc task executed a python script to analyze online text submissions for an assignment
- *  for sentiment.  The resulting report is saved into the user's private file area.
+ *  Ad hoc task executes a python script to analyze online text submissions for a set of assignments configured in the sentiment
+ *  analsysis block settings.  Assignments are analyzed for sentiment and the resulting report(s) is saved into the executing
+ *  user's private file area.
  */
 class block_sentimentanalysis_task extends \core\task\adhoc_task {
 
@@ -44,36 +45,48 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $assignmentids = $custom_data->assignmentids;
         // Datetime to differentiate between iterations of the task reports.
         $datetime = new \DateTime('NOW');
+        // Iterate over assignments and do the sentiment analysis.
         foreach ($assignmentids as $assignment)
         {
+            // We need the users' names and their online text submissions for this assignment.
             $sql = "SELECT usr.firstname, usr.lastname, t.onlinetext
                 FROM mdl_assignsubmission_onlinetext t
                 INNER JOIN mdl_assign_submission sub on sub.id = t.submission
                 INNER JOIN mdl_user usr on usr.id = sub.userid
                 WHERE t.assignment = '$assignment' and sub.status = 'submitted'";
+            // Execute the sql.
             $text_submissions = $DB->get_recordset_sql($sql);
-            // if result contains zero records, move on to the next assignment.
+            // if result contains zero records, move on to the next assignment.  
+            //  There are't any submissions for this assignment (yet).
             if ($text_submissions->valid() == false)
             {
                 continue;
             }
+            // We want the readable name of the assignment, ie. "Assignment 1" instead it's id
+            //  which wouldn't be meaningful to the person reading the report we are generating.
             $sql = "SELECT asn.name
                     FROM mdl_assign asn
                     WHERE asn.id = $assignment";
+            // We expect only a single record (name) back.
             $record = $DB->get_record_sql($sql);
+            // Get the name.
             $assign_name = $record->name;
 
             // Make temp directory and write all assignment submissions to it.
+            //  so the python script can just iterate over the whole directory.
             $dir = make_temp_directory('sentiment_analysis');
             foreach ($text_submissions as $record => $row)
             {
+                // Write the file as <name>_<assignment name>.txt
                 $name = $row->firstname . " " . $row->lastname;
                 $myfile = fopen($dir . "\\" . $name . "_" . $assign_name . ".txt", "w");
+                // Strip the html tags off the body of the text submission.
                 fwrite($myfile, strip_tags($row->onlinetext));
                 fclose($myfile);
             }
-            // Execute python script to process the text submissions.
+            // Execute python script to process the text submissions for this assignment.
             exec('C:\Python27\python '. __DIR__ . '\\sentiments_analysis.py ' . $path_to_temp_folder, $output, $return);
+            // Debugging output can be seen when cron is executed.
             if (!$return) {
                 mtrace("... Sentiment analylsis completed.");
             } else {
@@ -94,7 +107,8 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             $record->itemid     = 0;
             $record->contextid  = $context->id;
             $record->userid     = $userid;
-
+            // Moodle function that gets the "next" unused filename.  Shouldn't be an issue as we are timestamping
+            //  our files with a datetime.
             $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
                     $record->itemid, $record->filepath, $assign_name . ' ' . $datetime->format('Y-m-d H:i:s') . '.pdf');
             // Ensure file is readable/exists.
@@ -109,7 +123,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             } else {
                 mtrace("... Unknown failure during creation.");
             }
-             // Clean up temp folder.
+             // Clean up temp folder by getting rid of all files.
             $files = glob($path_to_temp_folder . '\\*');
             foreach($files as $file)
             {
@@ -120,7 +134,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             }
         }
 
-        // Email user to let them know their reports are completed and uploaded in their private file section.
+        // Notify user to let them know their reports are completed and uploaded in their private file section.
         $message = new \core\message\message();
         $message->component = 'moodle';
         $message->name = 'instantmessage';
@@ -135,6 +149,5 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         $message->courseid = 4; // This is required in recent versions, use it from 3.2 on https://tracker.moodle.org/browse/MDL-47162
 
         $messageid = message_send($message);
-
         }
     }

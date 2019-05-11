@@ -45,8 +45,8 @@ $block = block_instance("sentimentanalysis", $instancerec);
 // Block instance rec leads to parent (course) context
 $coursecontext = context::instance_by_id($block->instance->parentcontextid);
 
-// Now I got the course id in the instanceid member. If we puke
-// wanna go back to the course view.
+// Now I got the course id in the instanceid member. If anytihing goes wrong
+// want to go back to the course view.
 $PAGE->set_url('/course/view.php', array('id' => $coursecontext->instanceid));
 
 // Know which course we're in, so can authorize the user
@@ -67,4 +67,5 @@ $task->set_custom_data(array(
 
 // Queue it, then back to the course.
 \core\task\manager::queue_adhoc_task($task);
-redirect($PAGE->url);
+//Adding message to redirect until/unless I can figure out how to display it in the block upon clicking the execute button.
+redirect($PAGE->url, "You will recieve a notification when your sentiment analysis reports have completed.");

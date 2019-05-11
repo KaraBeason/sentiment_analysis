@@ -22,32 +22,51 @@
  * @license     GNU General Public License version 3
  * @package     block_sentimentanalysis
  */
+
 require_once(__DIR__ . '/lib.php');
 
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Block plugin
+ */
+
 class block_sentimentanalysis extends block_base {
+
+     /**
+     * Called by the parent class constructor
+     */
     public function init() {
         $this->title = get_string('sentimentanalysis', 'block_sentimentanalysis');
     }
 
+    /**
+     * {@inheritDoc}
+     * @see block_base::get_content()
+     */
     public function get_content() {
+
         global $COURSE;
 
-        $context = context_course::instance($COURSE->id);
         // Check current user's capabilities.  
-        // Only admin user or instructor for the course should view this block.
-        if (!has_capability('moodle/course:update', $context))
+        // Only admin user or instructor for this course should view this block.
+        if (!has_capability('moodle/course:update', context_course::instance($COURSE->id)))
         {
+            // Display nothing.
             return;
         }
 
+        // This method called initially only to see if content
+        // exists, then a second time to actually emit it.
         if ($this->content !== null) {
             return $this->content;
         }
-
-        // Link that queues the sentiment analysis task via execute_task.php
-        $this->content =  new stdClass;
+                
+        // If user is authorized, a button that queues the sentiment analysis task via execute_task.php
+        //  will be displayed.
         $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', 
             array('id' => $this->instance->id));
+        $this->content =  new stdClass;
         $this->content->text = '<a href="'.$executetask.'" class="btn btn-primary">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
 
         return $this->content;
