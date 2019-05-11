@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * block_mysites
+ * block_sentimentanalysis
  *
  * @author      Kara Beason <beasonke@appstate.edu>
  * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
@@ -24,7 +24,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
 
 
 $capabilities = array(

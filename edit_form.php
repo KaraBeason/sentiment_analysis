@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * block_sentimentanalysis
+ * block_sentimentanalysis instance configuration.
  *
  * @author      Kara Beason <beasonke@appstate.edu>
  * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
@@ -25,6 +25,12 @@
 defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/lib.php');
 
+/**
+ * Block instance configuration to set the list of assignments
+ *  with online text submission enabled that the sentiment analysis
+ *  task will run against when the "execute task" button is clicked
+ *  in the block.
+ */
 class block_sentimentanalysis_edit_form extends block_edit_form {
     protected function specific_definition($mform) {
  
@@ -33,6 +39,7 @@ class block_sentimentanalysis_edit_form extends block_edit_form {
         // Section header title according to language file.
         $mform->addElement('header', 'config_header', get_string('blocksettings', 'block'));
 
+        // Display a list of assignments with online text submission enabled for this course.
         $assignments = get_available_assignments($COURSE->id);
         $options = array();
         foreach ($assignments as $id => $assignname) {
@@ -42,6 +49,5 @@ class block_sentimentanalysis_edit_form extends block_edit_form {
         $select = $mform->addElement('select', 'config_assignments', get_string('assignlist', 'block_sentimentanalysis'), $options);
         $select->setMultiple(true);
         $mform->setType('config_assignments', PARAM_RAW);
-
     }
 }

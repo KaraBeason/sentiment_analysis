@@ -1,4 +1,5 @@
 # sentiment_analysis
+# to do: all of this.
 
 Variables that need to be set:
 $path_to_temp_folder in block_sentiment_analysis_task.php:38

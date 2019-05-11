@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings for the RSS client block.
+ *  Settings for block_sentimentanalysis
  *
- * @package   block_sentimentanalysis
- * @copyright  2019 Kara Beason (beasonke@appstate.edu)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Kara Beason <beasonke@appstate.edu>
+ * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
+ * @license     GNU General Public License version 3
+ * @package     block_sentimentanalysis
  */
 
 defined('MOODLE_INTERNAL') || die;
