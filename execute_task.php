@@ -57,6 +57,12 @@ require_capability('moodle/course:update', $coursecontext);
 // At this user is authenticated, and authorized to submit the task
 $blockinstance = block_instance('sentimentanalysis', $instancerec);
 
+// If assignment list has not been configured, nothing to run.
+if (!$blockinstance->config)
+{
+    redirect($PAGE->url, get_string("noconfigprompt", "block_sentimentanalysis"));
+}
+
 // Config is deserialized from text column, assignments in
 // array, create the ad hoc task and supply the needed ids
 $task = new block_sentimentanalysis_task();
@@ -68,4 +74,4 @@ $task->set_custom_data(array(
 // Queue it, then back to the course.
 \core\task\manager::queue_adhoc_task($task);
 //Adding message to redirect until/unless I can figure out how to display it in the block upon clicking the execute button.
-redirect($PAGE->url, "You will recieve a notification when your sentiment analysis reports have completed.");
+redirect($PAGE->url, get_string("submitprompt", "block_sentimentanalysis"));

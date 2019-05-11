@@ -55,19 +55,29 @@ class block_sentimentanalysis extends block_base {
             // Display nothing.
             return;
         }
-
+        
         // This method called initially only to see if content
         // exists, then a second time to actually emit it.
         if ($this->content !== null) {
             return $this->content;
         }
                 
-        // If user is authorized, a button that queues the sentiment analysis task via execute_task.php
-        //  will be displayed.
-        $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', 
-            array('id' => $this->instance->id));
         $this->content =  new stdClass;
-        $this->content->text = '<a href="'.$executetask.'" class="btn btn-primary">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
+
+        // If assignment list has not been configured, nothing to run.
+        if (!$this->config)
+        {
+            $this->content->text = get_string("noconfigprompt", "block_sentimentanalysis");
+        }
+        else
+        {
+            // Display button that queues the sentiment analysis task via execute_task.php
+            //  will be displayed.
+            $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', 
+                array('id' => $this->instance->id));
+        
+            $this->content->text = '<a href="'.$executetask.'" class="btn btn-primary">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
+        }
 
         return $this->content;
     }

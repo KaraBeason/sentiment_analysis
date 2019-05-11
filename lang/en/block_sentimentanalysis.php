@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * block_sentimentanalysis
+ * block_sentimentanalysis english language file
  *
  * @author      Kara Beason <beasonke@appstate.edu>
  * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
@@ -29,10 +29,9 @@ $string['pluginname'] = 'Sentiment Analysis Task';
 $string['sentimentanalysis'] = 'Sentiment Analysis Task';
 $string['sentimentanalysis:addinstance'] = 'Add new sentimentanalysisBlock';
 $string['sentimentanalysis:myaddinstance'] = 'Add a new sentimentanalysisBlock to the My Moodle page';
-$string['sentimentanalysis:viewpages'] = 'View sentimentanalysis';
-$string['sentimentanalysis:managepages'] = 'Manage sentimentanalysis';
 $string['executetask'] = 'Execute Task';
 $string['assignlist'] = 'Choose which assignments will be analyzed for sentiment.';
+$string['noconfigprompt'] = "Sentiment anlaysis block instance needs to be configured to run task.";
 $string['submitprompt'] = 'You will recieve a notification when your sentiment analysis reports have completed.';
 $string['pythonpath'] = 'Path to Python runtime';
 $string['pythonpathdesc'] = 'Please indicate the path to the Python runtime.';
