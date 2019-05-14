@@ -82,6 +82,14 @@ class block_sentimentanalysis extends block_base {
         return $this->content;
     }
 
+     /**
+     * {@inheritDoc}
+     * @see block_base::has_config()
+     */
+    function has_config() {
+        return true;
+    }
+
     //method that returns an associative array of attribute names and values, allowing us to change defaut behavior
     //  of block display
     public function html_attributes()

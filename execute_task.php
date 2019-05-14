@@ -63,10 +63,12 @@ if (!$blockinstance->config)
     redirect($PAGE->url, get_string("noconfigprompt", "block_sentimentanalysis"));
 }
 
+$block_config = get_config('block_sentimentanalysis');
 // Config is deserialized from text column, assignments in
 // array, create the ad hoc task and supply the needed ids
 $task = new block_sentimentanalysis_task();
 $task->set_custom_data(array(
+    'pythonpath' => $block_config->pythonpath,
     'assignmentids' => $blockinstance->config->assignments,
     'user' => $USER->id
     ));

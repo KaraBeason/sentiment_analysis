@@ -25,26 +25,22 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$field = "paths";
-$adminSetting = new admin_setting_heading(
-    "{$pluginname}/{$field}",
-    get_string("{$field}",  $pluginname),
-    get_string("{$field}desc", $pluginname));
-$settings->add($adminSetting);
-unset($adminSetting);
+if ($ADMIN->fulltree) {
+    $field = "paths";
+    $pluginname = "block_sentimentanalysis";
+    $adminSetting = new admin_setting_heading(
+        "{$pluginname}/{$field}",
+        get_string("{$field}",  $pluginname),
+        get_string("{$field}desc", $pluginname));
+    $settings->add($adminSetting);
+    unset($adminSetting);
 
-$field = "pythonpath";
-$adminSetting = new admin_setting_configtext(
-    "{$pluginname}/{$field}",
-    get_string("{$field}",  $pluginname),
-    get_string("{$field}desc", $pluginname));
-$settings->add($adminSetting);
-unset($adminSetting);
-
-$field = "tempfolderpath";
-$adminSetting = new admin_setting_configtext(
-    "{$pluginname}/{$field}",
-    get_string("{$field}",  $pluginname),
-    get_string("{$field}desc", $pluginname));
-$settings->add($adminSetting);
-unset($adminSetting);
+    $field = "pythonpath";
+    $adminSetting = new admin_setting_configtext(
+        "{$pluginname}/{$field}",
+        get_string("{$field}",  $pluginname),
+        get_string("{$field}desc", $pluginname),
+        '', PARAM_RAW );
+    $settings->add($adminSetting);
+    unset($adminSetting);
+}

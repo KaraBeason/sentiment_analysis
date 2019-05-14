@@ -38,9 +38,9 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
     public function execute()
     {
         global $DB;
-        $path_to_temp_folder = 'C:\\xampp\\moodledata\\temp\\sentiment_analysis\\'; // Path to where the work is done during the task.
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $custom_data = $this->get_custom_data();
+        $pythonpath = $custom_data->pythonpath;
         $userid = $custom_data->user;
         $assignmentids = $custom_data->assignmentids;
         // Datetime to differentiate between iterations of the task reports.
@@ -85,7 +85,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                 fclose($myfile);
             }
             // Execute python script to process the text submissions for this assignment.
-            exec('C:\Python27\python '. __DIR__ . '\\sentiments_analysis.py ' . $path_to_temp_folder, $output, $return);
+            exec($pythonpath . ' ' . __DIR__ . '\\sentiments_analysis.py ' . $dir, $output, $return);
             // Debugging output can be seen when cron is executed.
             if (!$return) {
                 mtrace("... Sentiment analylsis completed.");
@@ -112,19 +112,19 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
                     $record->itemid, $record->filepath, $assign_name . ' ' . $datetime->format('Y-m-d H:i:s') . '.pdf');
             // Ensure file is readable/exists.
-            if (!is_readable($path_to_temp_folder . $filename))
+            if (!is_readable($dir . '/' . $filename))
             {
-                mtrace("... File '. $path_to_temp_folder . $filename . ' does not exist or is not readable.");
+                mtrace("... File '. $dir . '/' . $filename . ' does not exist or is not readable.");
                 return;
             }
-            if ($fs->create_file_from_pathname($record, $path_to_temp_folder . $filename))
+            if ($fs->create_file_from_pathname($record, $dir . '/' . $filename))
             {
                 mtrace("... File uploaded successfully as {$record->filename}.");
             } else {
                 mtrace("... Unknown failure during creation.");
             }
              // Clean up temp folder by getting rid of all files.
-            $files = glob($path_to_temp_folder . '\\*');
+            $files = glob($dir . '\\*');
             foreach($files as $file)
             {
                 if (is_file($file))
