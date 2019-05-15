@@ -31,6 +31,7 @@ $string['sentimentanalysis:addinstance'] = 'Add new sentimentanalysisBlock';
 $string['sentimentanalysis:myaddinstance'] = 'Add a new sentimentanalysisBlock to the My Moodle page';
 $string['executetask'] = 'Execute Task';
 $string['assignlist'] = 'Choose which assignments will be analyzed for sentiment.';
+$string['noblockconfigprompt'] = 'Python path is not configured.  Please contact your administrator.';
 $string['noconfigprompt'] = "Sentiment anlaysis block needs to be configured to run task.";
 $string['submitprompt'] = 'You will recieve a notification when your sentiment analysis reports have completed.';
 $string['paths'] = "Path Variables";

@@ -64,8 +64,15 @@ class block_sentimentanalysis extends block_base {
                 
         $this->content =  new stdClass;
 
+        $block_config = get_config('block_sentimentanalysis');
+
+        // If block has not been configured, nothing to run.
+        if ($block_config->pythonpath == '')
+        {
+            $this->content->text = get_string("noblockconfigprompt", "block_sentimentanalysis");
+        }
         // If assignment list has not been configured, nothing to run.
-        if (!$this->config)
+        else if (!$this->config)
         {
             $this->content->text = get_string("noconfigprompt", "block_sentimentanalysis");
         }
