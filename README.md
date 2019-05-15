@@ -5,7 +5,7 @@ This block plugin provides course administrators the ability to analyze the sent
 type assignments in Moodle.  The sentiment analysis task uses Python's [Natural Language Toolkit (NLTK)](https://www.nltk.org/) along with 
 the [TextBlob library](https://textblob.readthedocs.io/en/dev/) to analyze pieces of text for sentiment, producing a "polarity score" for 
 the text which indicates whether the text expresses a negative, neutral, or positive sentiment.  
-###Configuration
+### Configuration
 #### Python Path
 The path to the python runtime executable is configured by an administrator upon installation of the plugin or via the "plugin overview" section
 of site administration in Moodle.
