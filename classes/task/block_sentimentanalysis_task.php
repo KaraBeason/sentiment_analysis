@@ -37,7 +37,8 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
 
     public function execute()
     {
-        global $DB;
+        global $CFG, $DB;
+
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $custom_data = $this->get_custom_data();
         $pythonpath = $custom_data->pythonpath;
@@ -56,7 +57,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                 WHERE t.assignment = '$assignment' and sub.status = 'submitted'";
             // Execute the sql.
             $text_submissions = $DB->get_recordset_sql($sql);
-            // if result contains zero records, move on to the next assignment.  
+            // if result contains zero records, move on to the next assignment.
             //  There are't any submissions for this assignment (yet).
             if ($text_submissions->valid() == false)
             {
@@ -74,18 +75,18 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
 
             // Make temp directory and write all assignment submissions to it.
             //  so the python script can just iterate over the whole directory.
-            $dir = make_temp_directory('sentiment_analysis');
+            $dir = make_temp_directory('sentimentanalysis');
             foreach ($text_submissions as $record => $row)
             {
                 // Write the file as <name>_<assignment name>.txt
                 $name = $row->firstname . " " . $row->lastname;
-                $myfile = fopen($dir . "\\" . $name . "_" . $assign_name . ".txt", "w");
+                $myfile = fopen("{$dir}/{$name}_{$assign_name}.txt", "w");
                 // Strip the html tags off the body of the text submission.
                 fwrite($myfile, strip_tags($row->onlinetext));
                 fclose($myfile);
             }
             // Execute python script to process the text submissions for this assignment.
-            exec($pythonpath . ' ' . __DIR__ . '\\sentiments_analysis.py ' . $dir, $output, $return);
+            exec("export PYTHONPATH='{$CFG->dirroot}/blocks/sentimentanalysis/packages'; {$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/spongetextblobpants.py {$dir}", $output, $return);
             // Debugging output can be seen when cron is executed.
             if (!$return) {
                 mtrace("... Sentiment analylsis completed.");
