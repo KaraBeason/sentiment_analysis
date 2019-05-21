@@ -50,7 +50,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
         foreach ($assignmentids as $assignment)
         {
             // We need the users' names and their online text submissions for this assignment.
-            $sql = "SELECT usr.firstname, usr.lastname, t.onlinetext
+            $sql = "SELECT usr.username, usr.firstname, usr.lastname, t.onlinetext
                 FROM mdl_assignsubmission_onlinetext t
                 INNER JOIN mdl_assign_submission sub on sub.id = t.submission
                 INNER JOIN mdl_user usr on usr.id = sub.userid
@@ -78,9 +78,11 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             $dir = make_temp_directory('sentimentanalysis');
             foreach ($text_submissions as $record => $row)
             {
-                // Write the file as <name>_<assignment name>.txt
-                $name = $row->firstname . " " . $row->lastname;
-                $myfile = fopen("{$dir}/{$name}_{$assign_name}.txt", "w");
+                // Write the file as <username>_<name>_<assignment name>.txt
+                // Variables for readability
+                $username = $row->username;
+                $name = "{$row->firstname} {$row->lastname}";
+                $myfile = fopen("{$dir}/{$username}_{$name}_{$assign_name}.txt", "w");
                 // Strip the html tags off the body of the text submission.
                 fwrite($myfile, strip_tags($row->onlinetext));
                 fclose($myfile);

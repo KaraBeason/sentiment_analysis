@@ -112,6 +112,7 @@ for filename in os.listdir(directory):
     if filename.endswith(".txt"):
         # Username will be the first part of the filename for the report.
         username = filename.split('_')[0]
+        userfullname = filename.split('_')[1]
         filename = os.path.join(directory, filename)
         line = ""
         with codecs.open(filename, "r",encoding='utf-8', errors='ignore') as fdata:
@@ -121,8 +122,9 @@ for filename in os.listdir(directory):
             overall += line
             # Convert to textblob object
             line = TextBlob(line)
-            # Add sentiment assessment to sentiments dict under name <username>
-            sentiments[username] = line.sentiment_assessments
+            # Add sentiment assessment to sentiments dict under name <userfullname (username)>
+            index = userfullname + " " + "(" + username + ")"
+            sentiments[index] = line.sentiment_assessments
 # Convert entire text into a textblob object
 overall = TextBlob(overall)
 # Get the sentiment assessment of the whole thing.
