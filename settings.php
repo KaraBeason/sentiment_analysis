@@ -40,7 +40,8 @@ if ($ADMIN->fulltree) {
         "{$pluginname}/{$field}",
         get_string("{$field}",  $pluginname),
         get_string("{$field}desc", $pluginname),
-        '', PARAM_RAW );
+        get_string("{$field}default", $pluginname),
+        PARAM_RAW );
     $settings->add($adminSetting);
     unset($adminSetting);
 }
