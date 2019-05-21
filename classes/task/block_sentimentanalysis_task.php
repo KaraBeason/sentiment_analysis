@@ -75,20 +75,20 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
 
             // Make temp directory and write all assignment submissions to it.
             //  so the python script can just iterate over the whole directory.
-            $dir = make_temp_directory('sentimentanalysis');
+            $sentimentdir = make_temp_directory('sentimentanalysis');
             foreach ($text_submissions as $record => $row)
             {
                 // Write the file as <username>_<name>_<assignment name>.txt
                 // Variables for readability
                 $username = $row->username;
                 $name = "{$row->firstname} {$row->lastname}";
-                $myfile = fopen("{$dir}/{$username}_{$name}_{$assign_name}.txt", "w");
+                $myfile = fopen("{$sentimentdir}/{$username}_{$name}_{$assign_name}.txt", "w");
                 // Strip the html tags off the body of the text submission.
                 fwrite($myfile, strip_tags($row->onlinetext));
                 fclose($myfile);
             }
             // Execute python script to process the text submissions for this assignment.
-            exec("export PYTHONPATH='{$CFG->dirroot}/blocks/sentimentanalysis/packages'; {$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/spongetextblobpants.py {$dir}", $output, $return);
+            exec("export PYTHONPATH='{$CFG->dirroot}/blocks/sentimentanalysis/packages'; {$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/spongetextblobpants.py {$sentimentdir}", $output, $return);
             // Debugging output can be seen when cron is executed.
             if (!$return) {
                 mtrace("... Sentiment analylsis completed.");
@@ -115,19 +115,19 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
                     $record->itemid, $record->filepath, $assign_name . ' ' . $datetime->format('Y-m-d H:i:s') . '.pdf');
             // Ensure file is readable/exists.
-            if (!is_readable($dir . '/' . $filename))
+            if (!is_readable($sentimentdir . '/' . $filename))
             {
-                mtrace("... File '. $dir . '/' . $filename . ' does not exist or is not readable.");
+                mtrace("... File '. $sentimentdir . '/' . $filename . ' does not exist or is not readable.");
                 return;
             }
-            if ($fs->create_file_from_pathname($record, $dir . '/' . $filename))
+            if ($fs->create_file_from_pathname($record, $sentimentdir . '/' . $filename))
             {
                 mtrace("... File uploaded successfully as {$record->filename}.");
             } else {
                 mtrace("... Unknown failure during creation.");
             }
              // Clean up temp folder by getting rid of all files.
-            $files = glob($dir . '\\*');
+            $files = glob($sentimentdir . '\\*');
             foreach($files as $file)
             {
                 if (is_file($file))
