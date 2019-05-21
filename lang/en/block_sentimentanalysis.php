@@ -38,3 +38,4 @@ $string['paths'] = "Path Variables";
 $string["pathsdesc"] = "Please set the path variables necessary to run sentiment analysis.";
 $string['pythonpath'] = 'Path to Python runtime';
 $string['pythonpathdesc'] = 'Please indicate the path to the Python runtime.';
+$string['pythonpathdefault'] = 'python';
