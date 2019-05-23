@@ -27,8 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Returns a list of all assignments that have online text submission enabled for
  *  the given course id.
+ * @param int courseid the integer id of the course we are looking at
+ * @return sql results containing row id and name of the requested assignements
  */
-function get_available_assignments($courseid)
+function get_available_assignments(int $courseid)
 {
     global $DB;
     
