@@ -96,8 +96,7 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                 fclose($myfile);
             }
             // Execute python script to process the text submissions for this assignment.
-            // exec("export PYTHONPATH='{$CFG->dirroot}/blocks/sentimentanalysis/packages'; {$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/spongetextblobpants.py {$sentimentdir}", $output, $return);
-            exec("{$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/sentimentanalysis.py {$sentimentdir}", $output, $return);
+            exec("export PYTHONPATH='{$CFG->dirroot}/blocks/sentimentanalysis/packages'; {$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/sentimentanalysis.py {$sentimentdir}", $output, $return);
 
             // Debugging output can be seen when cron is executed.
             if (!$return) {
