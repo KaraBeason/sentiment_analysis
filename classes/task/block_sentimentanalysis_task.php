@@ -41,7 +41,15 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
 
         // Custom data returned as decoded json as defined in classes\task\adhoc_task.
         $custom_data = $this->get_custom_data();
-        $pythonpath = $custom_data->pythonpath;
+        // if no path has been specified, default to symbolic link
+        if ($custom_data->pythonpath == '')
+        {
+            $pythonpath = 'python';
+        }
+        else
+        {
+            $pythonpath = $custom_data->pythonpath;
+        }
         $userid = $custom_data->user;
         $assignmentids = $custom_data->assignmentids;
         // Datetime to differentiate between iterations of the task reports.
@@ -88,7 +96,9 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                 fclose($myfile);
             }
             // Execute python script to process the text submissions for this assignment.
-            exec("export PYTHONPATH='{$CFG->dirroot}/blocks/sentimentanalysis/packages'; {$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/spongetextblobpants.py {$sentimentdir}", $output, $return);
+            // exec("export PYTHONPATH='{$CFG->dirroot}/blocks/sentimentanalysis/packages'; {$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/spongetextblobpants.py {$sentimentdir}", $output, $return);
+            exec("{$pythonpath} {$CFG->dirroot}/blocks/sentimentanalysis/sentimentanalysis.py {$sentimentdir}", $output, $return);
+
             // Debugging output can be seen when cron is executed.
             if (!$return) {
                 mtrace("... Sentiment analylsis completed.");
@@ -113,14 +123,14 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
             // Moodle function that gets the "next" unused filename.  Shouldn't be an issue as we are timestamping
             //  our files with a datetime.
             $record->filename = $fs->get_unused_filename($context->id, $record->component, $record->filearea,
-                    $record->itemid, $record->filepath, $assign_name . ' ' . $datetime->format('Y-m-d H:i:s') . '.pdf');
+                    $record->itemid, $record->filepath, "{$assign_name}_{$datetime->format('Y-m-d-H:i:s')}.pdf");
             // Ensure file is readable/exists.
-            if (!is_readable($sentimentdir . '/' . $filename))
+            if (!is_readable("{$sentimentdir}/{$filename}"))
             {
-                mtrace("... File '. $sentimentdir . '/' . $filename . ' does not exist or is not readable.");
+                mtrace("... File {$sentimentdir}/{$filename} does not exist or is not readable.");
                 return;
             }
-            if ($fs->create_file_from_pathname($record, $sentimentdir . '/' . $filename))
+            if ($fs->create_file_from_pathname($record, "{$sentimentdir}/{$filename}"))
             {
                 mtrace("... File uploaded successfully as {$record->filename}.");
             } else {
