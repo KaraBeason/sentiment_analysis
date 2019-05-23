@@ -52,7 +52,7 @@ $PAGE->set_url('/course/view.php', array('id' => $coursecontext->instanceid));
 // Know which course we're in, so can authorize the user
 require_login($coursecontext->instanceid);
 // Check current user's capabilities.
-require_capability('moodle/course:update', $coursecontext);
+require_capability('moodle/course:manageactivities', $coursecontext);
 
 // At this user is authenticated, and authorized to submit the task
 $blockinstance = block_instance('sentimentanalysis', $instancerec);
