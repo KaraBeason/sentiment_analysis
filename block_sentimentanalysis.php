@@ -50,7 +50,7 @@ class block_sentimentanalysis extends block_base {
 
         // Check current user's capabilities.  
         // Only admin user or instructor for this course should view this block.
-        if (!has_capability('moodle/course:update', context_course::instance($COURSE->id)))
+        if (!has_capability('moodle/course:manageactivities', context_course::instance($COURSE->id)))
         {
             // Display nothing.
             return;
@@ -66,13 +66,8 @@ class block_sentimentanalysis extends block_base {
 
         $block_config = get_config('block_sentimentanalysis');
 
-        // If block python path has not been configured, nothing to run.
-        if ($block_config->pythonpath == '')
-        {
-            $this->content->text = get_string("noblockconfigprompt", "block_sentimentanalysis");
-        }
         // If block INSTANCE assignment list has not been configured, nothing to run.
-        else if (!$this->config)
+        if (!$this->config)
         {
             $this->content->text = get_string("noconfigprompt", "block_sentimentanalysis");
         }
@@ -83,7 +78,7 @@ class block_sentimentanalysis extends block_base {
             $executetask = new moodle_url('/blocks/sentimentanalysis/execute_task.php', 
                 array('id' => $this->instance->id));
         
-            $this->content->text = '<a href="'.$executetask.'" class="btn btn-primary">'.get_string('executetask', 'block_sentimentanalysis').'</a>';
+            $this->content->text = '<div algin = "center" ><a href="'.$executetask.'" class="btn btn-primary">'.get_string('executetask', 'block_sentimentanalysis').'</a></div>';
         }
 
         return $this->content;
