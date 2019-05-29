@@ -3,7 +3,7 @@
 #  *
 #  * This python script takes the name of a directory as a command line argument
 #       and analyzes each .txt file in the directory for sentiment.  A report is
-#       produced in the same directory containing the overall sentiment of the 
+#       produced in the same directory containing the overall sentiment of the
 #       collectio of text files, as well as an individual sentiment analysis
 #       of each file.
 #  * @author      Kara Beason <beasonke@appstate.edu>
@@ -12,6 +12,7 @@
 #  */
 from textblob import TextBlob
 import os
+import glob
 import sys
 import codecs
 from reportlab.pdfgen import canvas
@@ -30,6 +31,7 @@ if (not os.path.isdir(directory)) or (not os.path.exists(directory)):
     print("Directory %s is not valid.", directory)
     exit(0)
 
+
 # Check the current y position and whether the next line or decrease
 #   of y position by value will run off the page.  Return a valid
 #   new y value.
@@ -42,92 +44,93 @@ def is_new_page(report, y, value, height):
         y = y - value
         return y
 
+
 # Determine whether the polarity score (integer passed in)
 #   is negative (green), neutral (grey), or positive (green)
 def get_polarity_color(polarity):
-    if (polarity < -0.05):
+    if polarity < -0.05:
         return '#FF0000'
-    elif (polarity > 0.05):
+    elif polarity > 0.05:
         return '#008000'
     else:
         return '#808080'
 
+
 # Create the body of the report named report_name.
-#   Sentiments_list is the list of indivdual sentiment analyses
+#   Sentiments_list is the list of individual sentiment analyses
 #   and overall is the overall sentiment of the list.
-def print_report(report_name, sentiments_list, overall):
-    # save the report in the directory passed in on command line.
-    save_name = os.path.join(directory, report_name + ".pdf")
+def print_report(studentSentimentDict, overallSentiment):
     # PDF lab canvas creation
-    rep = canvas.Canvas(save_name, pagesize=letter)
+    reportPDF = canvas.Canvas("output.pdf", pagesize=letter)
     # although width is unused in this script it's apparently necessary for report lab.
-    width, height = letter 
+    width, height = letter
     # decrease y for the top of page margin.
     y = height - 100
     # Print the overall sentiment analysis on the first page.
-    rep.drawString(100, y, "Overall Sentiment: ")
-    for label, val in overall.__dict__.items():
-        if label == "sentiment_assessments":
-            y = is_new_page(rep, y, 15, height)
-            for l, v in val.__dict__.items():
-                y = is_new_page(rep, y, 15, height)
-                rep.drawString(125, y, str(l))
-                if isinstance(v, float):
-                    y = is_new_page(rep, y, 15, height)
-                    if l == "polarity":
-                        color = get_polarity_color(v)
-                        rep.setFillColor(HexColor(color))
-                    rep.drawString(125, y, str(v))
-                    rep.setFillColor(HexColor('#000000'))
+    reportPDF.drawString(100, y, "Overall Sentiment: ")
+    y = is_new_page(reportPDF, y, 15, height)
+    reportPDF.drawString(125, y, "Polarity:")
+    y = is_new_page(reportPDF, y, 15, height)
+    color = get_polarity_color(overallSentiment.polarity)
+    reportPDF.setFillColor(HexColor(color))
+    reportPDF.drawString(125, y, str(overallSentiment.polarity))
+    reportPDF.setFillColor(HexColor('#000000'))
+    y = is_new_page(reportPDF, y, 15, height)
+    reportPDF.drawString(125, y, "Subjectivity:")
+    y = is_new_page(reportPDF, y, 15, height)
+    reportPDF.drawString(125, y, str(overallSentiment.subjectivity))
     # new page.
-    rep.showPage()
+    reportPDF.showPage()
     # Sentiment Analysis by text file/ student
-    for user, sentiment in sentiments_list.iteritems():
+    for user, sentiment in studentSentimentDict.iteritems():
         y = height - 100
-        rep.drawString(100, y, "Student Name: ")
-        rep.drawString(225, y, user)
-        for name, value in sentiment.__dict__.items():
-            y = is_new_page(rep, y, 15, height)
-            rep.drawString(125, y, str(name))
-            y = is_new_page(rep, y, 15, height)
+        reportPDF.drawString(100, y, "Student Name: ")
+        reportPDF.drawString(225, y, user)
+        y = is_new_page(reportPDF, y, 15, height)
+        reportPDF.drawString(125, y, "Polarity:")
+        y = is_new_page(reportPDF, y, 15, height)
+        color = get_polarity_color(sentiment.polarity)
+        reportPDF.setFillColor(HexColor(color))
+        reportPDF.drawString(125, y, str(sentiment.polarity))
+        reportPDF.setFillColor(HexColor('#000000'))
+        y = is_new_page(reportPDF, y, 15, height)
+        reportPDF.drawString(125, y, "Subjectivity:")
+        y = is_new_page(reportPDF, y, 15, height)
+        reportPDF.drawString(125, y, str(sentiment.subjectivity))
+        y = is_new_page(reportPDF, y, 15, height)
+        reportPDF.drawString(125, y, "Assessments:")
+        for word in sentiment.assessments:
+            y = is_new_page(reportPDF, y, 15, height)
+            reportPDF.drawString(125, y, str(word))
+        reportPDF.showPage()
+    reportPDF.save()
 
-            if isinstance(value, float):
-                if (name == "polarity"):
-                    color = get_polarity_color(value)
-                    rep.setFillColor(HexColor(color))
-                rep.drawString(125, y, str(value))
-                rep.setFillColor(HexColor('#000000'))
-            else:
-                for word in value:
-                    y = is_new_page(rep, y, 15, height)
-                    rep.drawString(125, y, str(word))
-        rep.showPage()
-    rep.save()
 
-# Create the sentiments list.
-sentiments = dict()
-overall = ""
+# Create the sentiments dictionary.
+studentSentimentsDict = dict()
+overallText = ""
+# Change working directory to the dir that was passed in.
+os.chdir(directory)
 # Iterate over each text file in the directory
-for filename in os.listdir(directory):
-    if filename.endswith(".txt"):
-        # Username will be the first part of the filename for the report.
-        username = filename.split('_')[0]
-        userfullname = filename.split('_')[1]
-        filename = os.path.join(directory, filename)
-        line = ""
-        with codecs.open(filename, "r",encoding='utf-8', errors='ignore') as fdata:
-            # Read in the text file.
-            line += fdata.read()
-            # Add contents of text file to overall text.
-            overall += line
-            # Convert to textblob object
-            line = TextBlob(line)
-            # Add sentiment assessment to sentiments dict under name <userfullname (username)>
-            index = userfullname + " " + "(" + username + ")"
-            sentiments[index] = line.sentiment_assessments
+for fileName in glob.iglob('*.txt'):
+    # Username will be the first part of the filename for the report.
+    userName = fileName.split('_')[0]
+    userFullName = fileName.split('_')[1]
+    fileText = ""
+    with codecs.open(fileName, "r",encoding='utf-8', errors='ignore') as fileData:
+        # Read in the text file.
+        fileText += fileData.read()
+        # Add contents of text file to overall text.
+        overallText += fileText
+        # Convert to textblob object
+        textBlobOutput = TextBlob(fileText)
+        # Add sentiment assessment to sentiments dict under name <userfullname (username)>
+        dictIndex = userFullName + " " + "(" + userName + ")"
+        # Add the sentiment assessment of the text blob to the student sentiment dictionary under the student's name.
+        studentSentimentsDict[dictIndex] = textBlobOutput.sentiment_assessments
 # Convert entire text into a textblob object
-overall = TextBlob(overall)
+overallTextBlobOutput = TextBlob(overallText)
 # Get the sentiment assessment of the whole thing.
-overall_sentiment = overall.sentiment_assessments
+overallSentiment = overallTextBlobOutput.sentiment_assessments
 # Create and save the report.
-print_report("output", sentiments, overall)
+print_report(studentSentimentsDict, overallSentiment)
