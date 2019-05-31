@@ -1,13 +1,13 @@
 # /**
-#  * Sentiment Anaysis Task
+#  * Sentiment Analysis Task
 #  *
 #  * This python script takes the name of a directory as a command line argument
 #       and analyzes each .txt file in the directory for sentiment.  A report is
 #       produced in the same directory containing the overall sentiment of the
-#       collectio of text files, as well as an individual sentiment analysis
+#       collection of text files, as well as an individual sentiment analysis
 #       of each file.
 #  * @author      Kara Beason <beasonke@appstate.edu>
-#  * @copyright   (c) 2019 Appalachian State Universtiy, Boone, NC
+#  * @copyright   (c) 2019 Appalachian State University, Boone, NC
 #  * @license     GNU General Public License version 3
 #  */
 from textblob import TextBlob

@@ -78,9 +78,9 @@ class block_sentimentanalysis_task extends \core\task\adhoc_task {
                     WHERE asn.id = $assignment";
             // We expect only a single record (name) back.
             $record = $DB->get_record_sql($sql);
-            // Get the name.
-            $assign_name = $record->name;
-
+            // Get the name and format it to be used in a file name.
+            $assign_name = str_replace(" ", "_", $record->name);
+            
             // Make temp directory and write all assignment submissions to it.
             //  so the python script can just iterate over the whole directory.
             $sentimentdir = make_temp_directory('sentimentanalysis');
