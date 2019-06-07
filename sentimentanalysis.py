@@ -32,16 +32,18 @@ if (not os.path.isdir(directory)) or (not os.path.exists(directory)):
     exit(0)
 
 
-# Check the current y position and whether the next line or decrease
-#   of y position by value will run off the page.  Return a valid
-#   new y value.
-def is_new_page(report, y, value, height):
+# Check the current y position and whether the next line will run off the page.  
+# Return a valid new y value.
+def get_next_valid_y(report, y):
+    width, height = letter
     if y - 100 < 0:
+        # if the next line would run off the page/into the margin, 
+        #   create a new page and start at the top of the next.
         report.showPage()
         y = height - 100
         return y
     else:
-        y = y - value
+        y = y - 15
         return y
 
 
@@ -68,16 +70,16 @@ def print_report(studentSentimentDict, overallSentiment):
     y = height - 100
     # Print the overall sentiment analysis on the first page.
     reportPDF.drawString(100, y, "Overall Sentiment: ")
-    y = is_new_page(reportPDF, y, 15, height)
+    y = get_next_valid_y(reportPDF, y)
     reportPDF.drawString(125, y, "Polarity:")
-    y = is_new_page(reportPDF, y, 15, height)
+    y = get_next_valid_y(reportPDF, y)
     color = get_polarity_color(overallSentiment.polarity)
     reportPDF.setFillColor(HexColor(color))
     reportPDF.drawString(125, y, str(overallSentiment.polarity))
     reportPDF.setFillColor(HexColor('#000000'))
-    y = is_new_page(reportPDF, y, 15, height)
+    y = get_next_valid_y(reportPDF, y)
     reportPDF.drawString(125, y, "Subjectivity:")
-    y = is_new_page(reportPDF, y, 15, height)
+    y = get_next_valid_y(reportPDF, y)
     reportPDF.drawString(125, y, str(overallSentiment.subjectivity))
     # new page.
     reportPDF.showPage()
@@ -86,21 +88,21 @@ def print_report(studentSentimentDict, overallSentiment):
         y = height - 100
         reportPDF.drawString(100, y, "Student Name: ")
         reportPDF.drawString(225, y, user)
-        y = is_new_page(reportPDF, y, 15, height)
+        y = get_next_valid_y(reportPDF, y)
         reportPDF.drawString(125, y, "Polarity:")
-        y = is_new_page(reportPDF, y, 15, height)
+        y = get_next_valid_y(reportPDF, y)
         color = get_polarity_color(sentiment.polarity)
         reportPDF.setFillColor(HexColor(color))
         reportPDF.drawString(125, y, str(sentiment.polarity))
         reportPDF.setFillColor(HexColor('#000000'))
-        y = is_new_page(reportPDF, y, 15, height)
+        y = get_next_valid_y(reportPDF, y)
         reportPDF.drawString(125, y, "Subjectivity:")
-        y = is_new_page(reportPDF, y, 15, height)
+        y = get_next_valid_y(reportPDF, y)
         reportPDF.drawString(125, y, str(sentiment.subjectivity))
-        y = is_new_page(reportPDF, y, 15, height)
+        y = get_next_valid_y(reportPDF, y)
         reportPDF.drawString(125, y, "Assessments:")
         for word in sentiment.assessments:
-            y = is_new_page(reportPDF, y, 15, height)
+            y = get_next_valid_y(reportPDF, y)
             reportPDF.drawString(125, y, str(word))
         reportPDF.showPage()
     reportPDF.save()
